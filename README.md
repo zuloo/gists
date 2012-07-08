@@ -22,4 +22,3 @@ To create private gists add the option 'private'
 
 gists file_name --private
 
-```
