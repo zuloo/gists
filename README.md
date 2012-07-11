@@ -1,7 +1,7 @@
-Gisty
+Gists
 =====
 
-Manage gists from console easly.
+Python CLI interface for managing gists
 
 Configure
 ---------
@@ -16,3 +16,4 @@ How it works
 ------------
 
 TODO
+
