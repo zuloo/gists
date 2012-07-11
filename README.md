@@ -3,22 +3,16 @@ Gisty
 
 Manage gists from console easly.
 
+Configure
+---------
+
+Copy the gists.rc file to ~/.gists.rc and edit your github username and password.
+You can live without this config file using always the '-u (--user)' argument every
+time you perform an action and '-s (--secret)' argument every time you perform an 
+action that needs authentication.
+
+
 How it works
 ------------
 
-Just send
-
-```bash
-
-gists file_name 
-
-```
-
-and gisty will create a new gist in github and will tell you its location
-
-To create private gists add the option 'private'
-
-```bash
-
-gists file_name --private
-
+TODO
