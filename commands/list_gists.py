@@ -25,7 +25,6 @@ def list_gists(username=None, password=None):
     header = []
     header.append("id")
     header.append("description")
-    header.append("public")
     header.append("files")
     table_gists.append(header)
     if response.ok:
@@ -33,7 +32,6 @@ def list_gists(username=None, password=None):
             row = []
             row.append(gist['id'].encode("utf8"))
             row.append(gist['description'].encode("utf8"))
-            row.append(str(gist['public']))
             stringfiles = ""
             for filegist in gist['files']:
                 if stringfiles != "":
