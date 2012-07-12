@@ -34,7 +34,12 @@ def list_gists(username=None, password=None):
             row.append(gist['id'].encode("utf8"))
             row.append(gist['description'].encode("utf8"))
             row.append(str(gist['public']))
-            row.append(str(len(gist['files'])))
+            stringfiles = ""
+            for filegist in gist['files']:
+                if stringfiles != "":
+                    stringfiles += ", "
+                stringfiles += filegist
+            row.append(stringfiles)
             table_gists.append(row)
         utils.print_table(table_gists)
     else:
