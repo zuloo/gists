@@ -1,4 +1,4 @@
 [credentials]
 
-user: "your_github_user_here"
-password: "your_github_password_here"
+user: your_github_user_here
+password: your_github_password_here
