@@ -39,7 +39,12 @@ def list_gists(username=None, password=None):
                 stringfiles += filegist
             row.append(stringfiles)
             table_gists.append(row)
-        utils.print_table(table_gists)
+        result = utils.Result()
+        result.result_code = 'OK'
+        result.data = utils.format_table(table_gists)
     else:
-        print "Can not return the list of gists."
-        print "Github reason: '", response.json['message'], "'"
+        result = utils.Result()
+        result.result_code = 'NOK'
+        result.data += ("Can not return the list of gists."
+                        " Github reason: '%s '""") % (response.json['message'])
+    return result

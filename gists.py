@@ -4,6 +4,7 @@ import sys
 import argparse
 import os
 import ConfigParser
+from clint.textui import colored
 from commands import list_gists, show
 
 
@@ -67,12 +68,12 @@ def __handle_list(config, args):
     else:
         password = None
 
-    list_gists(username=username, password=password)
+    return list_gists(username=username, password=password)
 
 
 def __handle_show(config, args):
     """ Handle the arguments to call the 'show' gists functionality. """
-    show(args.gist_id, args.filename)
+    return show(args.gist_id, args.filename)
 
 
 def main(*args, **kwargs):
@@ -105,11 +106,20 @@ def main(*args, **kwargs):
     parser_get.add_argument("gist_id",
             help="Identifier of the gist to retrieve")
     parser_get.add_argument("-f", "--filename",
-            help="Specify gist file to show. Useful when gist has more than one file")
+            help=("Specify gist file to show. "
+                "Useful when gist has more than one file"))
     parser_get.set_defaults(func=__handle_show)
 
     args = parser.parse_args()
-    args.func(config, args)
+    result = args.func(config, args)
+    return result
+
 
 if __name__ == '__main__':
-    main()
+    result = main()
+    if result.result_code == 'OK':
+        result.result_code = colored.green('OK')
+    else:
+        result.result_code = colored.red('NOK')
+    print result.result_code
+    print result.data
