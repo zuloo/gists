@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from base64 import b64encode
 from ConfigParser import ConfigParser
+import json
 import requests
 import urllib2
 import os
@@ -30,6 +31,10 @@ class GithubFacade(object):
 
     def requestEntity(self, url, headers={}):
         return requests.get(url, headers=headers)
+
+    def createEntity(self, url, payload, headers={}):
+        data_json = json.dumps(payload)
+        return requests.post(url, data=data_json, headers=headers)
 
 
 def format_table(table_gists):
@@ -78,7 +83,7 @@ class GistsConfigurer(object):
         self.config = ConfigParser()
         self.config.read([os.path.expanduser('~/.gists.rc')])
 
-    def getFileConfigUser(self):
+    def getConfigUser(self):
         """ Returns the user from the configuration file.
 
         If configuration instance con not load 'credentials' section,
@@ -90,7 +95,7 @@ class GistsConfigurer(object):
         username = self.config.get('credentials', 'user')
         return username
 
-    def getConfigFilePassword(self):
+    def getConfigPassword(self):
         """ Loads the password from configuration instance.
 
         If configuration instance can not load the password returns None

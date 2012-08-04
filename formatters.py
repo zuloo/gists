@@ -57,5 +57,9 @@ def format_list(result):
         return __format_error(result.data)
 
 
+def format_post(result):
+    return ""
+
+
 def __format_error(data):
     return colored.red("Error: ") + data

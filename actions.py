@@ -6,6 +6,7 @@ import gistobj
 # Endpoints to gists' github API
 ENDPOINT_LIST = "https://api.github.com/users/%s/gists"
 ENDPOINT_GIST = "https://api.github.com/gists/%s"
+ENDPOINT_CREATE = "https://api.github.com/gists"
 
 
 # def list_gists(username=None, password=None):
@@ -121,3 +122,27 @@ def show(gist_id, requested_file):
                         " Github reason: '%s'""") % (response.json['message'])
 
     return result
+
+
+def post(username, password, public, upload_file, description):
+
+    # prepare the gist file
+    gist = gistobj.Gist()
+    gistFile = gistobj.GistFile()
+    gistFile.filename = upload_file
+    with open(upload_file, 'r') as f:
+        gistFile.content = f.read()
+    gist.addFile(gistFile)
+    if description:
+        gist.description = description
+    gist.public = public
+
+    headers = {}
+    encoded_authentication_string = encode_auth(username, password)
+    headers["Authorization"] = "Basic " + encoded_authentication_string
+
+    import json
+    print json.dumps(gist, indent=2)
+    response = GithubFacade().createEntity(ENDPOINT_CREATE, payload=gist, headers=headers)
+    if response.ok:
+        print "exito total"

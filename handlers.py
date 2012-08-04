@@ -10,7 +10,7 @@ def handle_list(config, args):
     if args.user:
         username = args.user
     else:
-        username = config.getFileConfigUser()
+        username = config.getConfigUser()
     if not username:
         print """Can not load github username neither from '--user (-u)'
                 parameter nor configuration file.  """
@@ -22,7 +22,7 @@ def handle_list(config, args):
         if args.secret:
             password = args.secret
         else:
-            password = config.getConfigFilePassword()
+            password = config.getConfigPassword()
         # Check if we have actually a password
         if not password:
             print """Password should be informed via
@@ -34,6 +34,37 @@ def handle_list(config, args):
     return username, password
 
 
+def handle_post(config, args):
+    # Get the 'user' argument if exists, otherwise take it from configuration
+    # file. If 'user' can not be loaded, raise an exception
+    if args.user:
+        username = args.user
+    else:
+        username = config.getConfigUser()
+    if not username:
+        print """Can not load github username neither from '--user (-u)'
+                parameter nor configuration file.  """
+        sys.exit()
+
+    # Get the 'secret' argument if exists, otherwise take it from configuration
+    # file. If 'secret' can not be loaded, raise an exception
+    if args.secret:
+        password = args.secret
+    else:
+        password = config.getConfigPassword()
+    if not username:
+        print """Can not load github password neither from '--secret (-s)'
+                parameter nor configuration file.  """
+        sys.exit()
+
+    if args.private:
+        public = False
+    else:
+        public = True
+
+    return username, password, public, args.file, args.description
+
+
 def handle_show(config, args):
     """ Handle the arguments to call the 'show' gists functionality. """
     return args.gist_id, args.filename
@@ -41,4 +72,4 @@ def handle_show(config, args):
 
 def handle_get(config, args):
     """ Handle the arguments to call the 'get' gists functionality. """
-    return args.gist_id, args.filename, args.destination_dir
+    return args.gist_id, args.filename, args.target_dir

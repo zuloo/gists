@@ -2,9 +2,9 @@
 
 import argparse
 import utils
-from actions import list_gists, show, get
-from handlers import handle_list, handle_show, handle_get
-from formatters import format_list, format_show, format_get
+from actions import list_gists, show, get, post
+from handlers import handle_list, handle_show, handle_get, handle_post
+from formatters import format_list, format_show, format_get, format_post
 
 
 def main(*args, **kwargs):
@@ -35,13 +35,13 @@ def main(*args, **kwargs):
             func=list_gists, formatter=format_list)
 
     # Add the subparser to handle the 'show' action
-    parser_get = subparsers.add_parser("show", help="Show a single gist file")
-    parser_get.add_argument("gist_id",
+    parser_show = subparsers.add_parser("show", help="Show a single gist file")
+    parser_show.add_argument("gist_id",
             help="Identifier of the gist to retrieve")
-    parser_get.add_argument("-f", "--filename",
+    parser_show.add_argument("-f", "--filename",
             help=("Specify gist file to show. "
                 "Useful when gist has more than one file"))
-    parser_get.set_defaults(handle_args=handle_show, func=show,
+    parser_show.set_defaults(handle_args=handle_show, func=show,
             formatter=format_show)
 
     # Add the subparser to handle the 'get' action
@@ -52,11 +52,32 @@ def main(*args, **kwargs):
     parser_get.add_argument("-f", "--filename",
             help=("Specify gist file to show. "
                 "Useful when gist has more than one file"))
-    parser_get.add_argument("-d", "--destination_dir",
+    parser_get.add_argument("-t", "--target_dir",
             help=("Specify the destination directory"),
             default=".")
     parser_get.set_defaults(handle_args=handle_get, func=get,
             formatter=format_get)
+
+    # Add the subparser to handle the 'create' action
+    parser_post = subparsers.add_parser("create",
+            help="Create a new gist")
+    parser_post.add_argument("-f", "--file",
+            help=("Specify gist file to upload."), required=True)
+    parser_post.add_argument("-u", "--user",
+            help="""Specify the user to create the gist.
+                        Overrides the default 'user' in configuration file""")
+    parser_post.add_argument("-s", "--secret",
+            help="""Specify the password.
+                        Overrides the default 'secret' in configuration
+                        file""")
+    parser_post.add_argument("-p", "--private",
+            help="""Specify you want to create a private gist
+            (public by default)""",
+            action="store_true")
+    parser_post.add_argument("-d", "--description",
+            help="Specify a description for the gist to create")
+    parser_post.set_defaults(handle_args=handle_post, func=post,
+            formatter=format_post)
 
     # parse the arguments
     args = parser.parse_args()
