@@ -7,16 +7,14 @@ class Gist(dict):
     def __init__(self, parsed_gist={}):
         """ Initialize gist object variables. """
         super(Gist, self).__init__(parsed_gist)
-        if 'files' in parsed_gist:
-            self.files = [GistFile(parsed_gist['files'][filename]) for
-                    filename in parsed_gist['files']]
-        else:
-            self.files = []
-            self['files'] = {}
 
     @property
     def url(self):
         return self['url']
+
+    @property
+    def html_url(self):
+        return self['html_url']
 
     @property
     def description(self):
@@ -42,6 +40,14 @@ class Gist(dict):
     def public(self, public):
         self['public'] = public
 
+    @property
+    def files(self):
+        """ Parse the 'self['files']' into GistFile objects. """
+        if not 'files' in self:
+            self['files'] = {}
+        return [GistFile(self['files'][gistfile])
+                for gistfile in self['files']]
+
     def getFile(self, requested_filename):
         candidates = [gistfile for gistfile in self.files
                 if gistfile.filename == requested_filename]
@@ -50,6 +56,8 @@ class Gist(dict):
         return candidates[0]
 
     def addFile(self, gistfile):
+        if not 'files' in self:
+            self['files'] = {}
         self['files'][gistfile.filename] = gistfile
 
 

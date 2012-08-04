@@ -4,7 +4,7 @@ import argparse
 import utils
 from actions import list_gists, show, get, post
 from handlers import handle_list, handle_show, handle_get, handle_post
-from formatters import format_list, format_show, format_get, format_post
+from formatters import format_list, format_gist, format_get, format_file
 
 
 def main(*args, **kwargs):
@@ -42,7 +42,7 @@ def main(*args, **kwargs):
             help=("Specify gist file to show. "
                 "Useful when gist has more than one file"))
     parser_show.set_defaults(handle_args=handle_show, func=show,
-            formatter=format_show)
+            formatter=format_file)
 
     # Add the subparser to handle the 'get' action
     parser_get = subparsers.add_parser("get",
@@ -77,7 +77,7 @@ def main(*args, **kwargs):
     parser_post.add_argument("-d", "--description",
             help="Specify a description for the gist to create")
     parser_post.set_defaults(handle_args=handle_post, func=post,
-            formatter=format_post)
+            formatter=format_gist)
 
     # parse the arguments
     args = parser.parse_args()

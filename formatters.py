@@ -3,7 +3,7 @@ import os
 from clint.textui import colored
 
 
-def format_show(result):
+def format_file(result):
 
     if result.success:
         file_gist = result.data
@@ -48,17 +48,40 @@ def format_list(result):
             if gist.description and gist.description != "":
                 description = gist.description
             gists_string += description
-            stringfiles = " [" + ", ".join([gistfile.filename
-                for gistfile in gist.files]) + "]"
-            gists_string += colored.red(stringfiles) + "\n"
+            gist_names = [gistfile.filename for
+                    gistfile in gist.files]
+            stringfiles = " [" + ", ".join(gist_names) + "]"
+            gists_string += colored.red(stringfiles)
+            if not gist.public:
+                gists_string += " (Private) "
+            gists_string += '\n'
+
         gists_string += colored.cyan('-' * int(columns)) + "\n"
         return gists_string
     else:
         return __format_error(result.data)
 
 
-def format_post(result):
-    return ""
+def format_gist(result):
+    if result.success:
+        gist = result.data
+        rows, columns = os.popen('stty size', 'r').read().split()
+        gists_string = colored.cyan('-' * int(columns)) + "\n"
+        gists_string += colored.red("[" + gist.identifier + "]") + '\n'
+        gists_string += colored.cyan('-' * int(columns)) + "\n"
+        gists_string += colored.green('Description:\t')
+        gists_string += gist.description + '\n'
+        gists_string += colored.green('Url:\t\t')
+        gists_string += gist.url + '\n'
+        gists_string += colored.green('Html Url:\t')
+        gists_string += gist.html_url + '\n'
+        gists_string += colored.green('Private:\t')
+        gists_string += str(not gist.public) + '\n'
+
+        gists_string += colored.cyan('-' * int(columns)) + "\n"
+        return gists_string
+    else:
+        return __format_error(result.data)
 
 
 def __format_error(data):

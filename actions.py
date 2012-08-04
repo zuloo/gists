@@ -126,23 +126,36 @@ def show(gist_id, requested_file):
 
 def post(username, password, public, upload_file, description):
 
-    # prepare the gist file
-    gist = gistobj.Gist()
+    # prepare the content
     gistFile = gistobj.GistFile()
     gistFile.filename = upload_file
     with open(upload_file, 'r') as f:
         gistFile.content = f.read()
-    gist.addFile(gistFile)
+
+    # prepare the gist file
+    gist = gistobj.Gist()
     if description:
         gist.description = description
     gist.public = public
+    gist.addFile(gistFile)
 
+    # prepare the request
     headers = {}
     encoded_authentication_string = encode_auth(username, password)
     headers["Authorization"] = "Basic " + encoded_authentication_string
 
-    import json
-    print json.dumps(gist, indent=2)
-    response = GithubFacade().createEntity(ENDPOINT_CREATE, payload=gist, headers=headers)
+    # parse the response
+    print "Uploading gist....",
+    response = GithubFacade().createEntity(ENDPOINT_CREATE,
+            payload=gist, headers=headers)
+    result = Result()
     if response.ok:
-        print "exito total"
+        print "Done!"
+        gist = gistobj.Gist(response.json)
+        result.success = True
+        result.data = gistobj.Gist(response.json)
+    else:
+        print "Fail!"
+        result.success = False
+        result.data = response.json['message']
+    return result
