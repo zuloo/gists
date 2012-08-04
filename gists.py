@@ -1,90 +1,22 @@
 #!/usr/bin/env python
 
-import sys
 import argparse
-import os
-import ConfigParser
-from clint.textui import colored
-from commands import list_gists, show
-
-
-def __getUser(config):
-    """ Loads the user from configuration instance.
-
-    If configuration instance can not load user returns None
-    """
-    if not config.has_section('credentials'):
-        print "Configuration file not found or not valid"
-        return None
-    username = config.get('credentials', 'user')
-    return username
-
-
-def __getPassword(config):
-    """ Loads the password from configuration instance.
-
-    If configuration instance can not load the password returns None
-    """
-    if not config.has_section('credentials'):
-        print "Configuration file not found or not valid"
-        return None
-    password = config.get('credentials', 'password')
-    return password
-
-
-def __config_instance():
-    """ Gets the config instance loading the configuration file. """
-    config = ConfigParser.ConfigParser()
-    config.read([os.path.expanduser('~/.gists.rc')])
-    return config
-
-
-def __handle_list(config, args):
-    """ Handle the arguments to call the 'list gists' functionality. """
-
-    # Get the 'user' argument if exists, otherwise take it from configuration
-    # file. If 'user' can not be loaded, raise an exception
-    if args.user:
-        username = args.user
-    else:
-        username = __getUser(config)
-    if not username:
-        print """Can not load github username neither from '--user (-u)'
-                parameter nor configuration file.  """
-        sys.exit()
-
-    # If '--private' option, password becomes mandatory. Load it. """
-    if args.private:
-        # Get it from argument line
-        if args.secret:
-            password = args.secret
-        else:
-            password = __getPassword(config)
-        # Check if we have actually a password
-        if not password:
-            print """Password should be informed via
-                     configuration file or '-s' argument"""
-            sys.exit()
-    else:
-        password = None
-
-    return list_gists(username=username, password=password)
-
-
-def __handle_show(config, args):
-    """ Handle the arguments to call the 'show' gists functionality. """
-    return show(args.gist_id, args.filename)
+import utils
+from actions import list_gists, show, get
+from handlers import handle_list, handle_show, handle_get
+from formatters import format_list, format_show, format_get
 
 
 def main(*args, **kwargs):
 
     # Load the configuration instance
-    config = __config_instance()
+    config = utils.GistsConfigurer()
 
     parser = argparse.ArgumentParser(
             description='Manage Github gists from CLI',
             epilog="Happy Gisting!")
 
+    # define subparsers to handle each action
     subparsers = parser.add_subparsers(help="Available actions. ")
 
     # Add the subparser to handle the list of gists
@@ -99,7 +31,8 @@ def main(*args, **kwargs):
     parser_list.add_argument("-u", "--user",
             help="""Specify the user to retrieve his gists.
                         Overrides the default 'user' in configuration file""")
-    parser_list.set_defaults(func=__handle_list)
+    parser_list.set_defaults(handle_args=handle_list,
+            func=list_gists, formatter=format_list)
 
     # Add the subparser to handle the 'show' action
     parser_get = subparsers.add_parser("show", help="Show a single gist file")
@@ -108,18 +41,38 @@ def main(*args, **kwargs):
     parser_get.add_argument("-f", "--filename",
             help=("Specify gist file to show. "
                 "Useful when gist has more than one file"))
-    parser_get.set_defaults(func=__handle_show)
+    parser_get.set_defaults(handle_args=handle_show, func=show,
+            formatter=format_show)
 
+    # Add the subparser to handle the 'get' action
+    parser_get = subparsers.add_parser("get",
+            help="Download a single gist file")
+    parser_get.add_argument("gist_id",
+            help="Identifier of the gist to retrieve")
+    parser_get.add_argument("-f", "--filename",
+            help=("Specify gist file to show. "
+                "Useful when gist has more than one file"))
+    parser_get.add_argument("-d", "--destination_dir",
+            help=("Specify the destination directory"),
+            default=".")
+    parser_get.set_defaults(handle_args=handle_get, func=get,
+            formatter=format_get)
+
+    # parse the arguments
     args = parser.parse_args()
-    result = args.func(config, args)
-    return result
+
+    # calling the handle_args function defined, parsing the args and return
+    # and object with the needed values to execute the function
+    parameters = args.handle_args(config, args)
+
+    # passing the 'parameters' object as array of parameters
+    result = args.func(*parameters)
+
+    # parsing the 'result' object to be output formatted.
+    # (that must be a single object)
+    result_formatted = args.formatter(result)
+    print result_formatted
 
 
 if __name__ == '__main__':
-    result = main()
-    if result.result_code == 'OK':
-        result.result_code = colored.green('OK')
-    else:
-        result.result_code = colored.red('NOK')
-    print result.result_code
-    print result.data
+    main()
