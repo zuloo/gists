@@ -1,5 +1,4 @@
 #!/usr/env/bin python
-
 from utils import GithubFacade, encode_auth, Result, download
 import gistobj
 
@@ -96,9 +95,9 @@ def show(gist_id, requested_file):
     if response.ok:
         gist_obj = gistobj.Gist(response.json)
         list_names = [gistfile.filename for gistfile in gist_obj.files]
-        if len(gist_obj.files) == 1 and not requested_file:
+        if not requested_file:
             result.success = True
-            result.data = gist_obj.files[0]
+            result.data = gist_obj
         else:
             if not requested_file:
                 result.success = False
@@ -130,7 +129,8 @@ def post(username, password, public, upload_file, description):
     gistFile = gistobj.GistFile()
     gistFile.filename = upload_file
     with open(upload_file, 'r') as f:
-        gistFile.content = f.read()
+        file_content = f.read()
+        gistFile.content = file_content
 
     # prepare the gist file
     gist = gistobj.Gist()
@@ -157,5 +157,50 @@ def post(username, password, public, upload_file, description):
     else:
         print "Fail!"
         result.success = False
-        result.data = response.json['message']
+        if response.json:
+            result.data = response.json['message']
+        else:
+            result.data = "Unhandled exception"
     return result
+
+
+def delete(gistid, username, password):
+
+    url = ENDPOINT_GIST % (gistid)
+
+    response = GithubFacade().requestEntity(url)
+    result = Result()
+
+    if response.ok:
+        value_raw_input = (("Are your sure you want to delete gist %s [yN]: ")
+            % (gistid))
+        value = raw_input(value_raw_input)
+        accepted_values_for_yes = ["y", "yes", "ofcourse", "ye"]
+        if value.lower() in accepted_values_for_yes:
+
+            # prepare the request
+            headers = {}
+            encoded_authentication_string = encode_auth(username, password)
+            headers["Authorization"] = "Basic " + encoded_authentication_string
+
+            response = GithubFacade().deleteEntity(url, headers)
+            if response.ok:
+                result.success = True
+                result.data = "Gist %s deleted successfully" % (gistid)
+            else:
+                result.success = False
+                result.data = ("Can not delete the gist."
+                        " Github reason: '%s'""") % (response.json['message'])
+        else:
+            result.success = False
+            result.data = "Delete aborted"
+    else:
+        result.success = False
+        result.data = ("Can not delete the gist."
+                        " Github reason: '%s'""") % (response.json['message'])
+
+    return result
+
+
+def update(gistid, username, password, description, filename, new, public):
+    return "yes"

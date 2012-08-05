@@ -33,38 +33,11 @@ class GithubFacade(object):
         return requests.get(url, headers=headers)
 
     def createEntity(self, url, payload, headers={}):
-        data_json = json.dumps(payload)
+        data_json = json.dumps(payload, indent=2)
         return requests.post(url, data=data_json, headers=headers)
 
-
-def format_table(table_gists):
-    """ Print table using the max_width of each column.
-
-    Seen on stackoverflow: http://goo.gl/h9yla
-    """
-
-    # Reorganize data by columns
-    cols = zip(*table_gists)
-
-    # Compute column widths by taking maximum lenght of values per column
-    col_widths = [max(len(value) for value in col) for col in cols]
-
-    # Create a suitable format string
-    format_string = '  |  '.join(['%%%ds' % width for width in col_widths])
-
-    string_table = ""
-    # Print each row using the computed format
-    for i in range(len(table_gists)):
-        row = table_gists[i]
-        row_string = format_string % (tuple(row))
-        if i == 0:
-            # print header
-            string_table += row_string + "\n"
-            string_table += "=" * len(row_string) + "\n"
-        else:
-            string_table += row_string + "\n"
-
-    return string_table
+    def deleteEntity(self, url, headers={}):
+        return requests.delete(url, headers=headers)
 
 
 def encode_auth(username, password):
@@ -114,4 +87,5 @@ def download(url, destination_dir, file_name, file_size):
     u = urllib2.urlopen(url)
     with open(destination_path, 'wb') as f:
         raw_file = u.read()
+        print raw_file
         f.write(raw_file)
