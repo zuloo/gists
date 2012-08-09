@@ -1,26 +1,14 @@
 #!/usr/env/bin python
-from utils import GithubFacade, encode_auth, Result, download
+from utils import GithubFacade, Result, download, build_result
+import literals
 import gistobj
-
-# Endpoints to gists' github API
-ENDPOINT_LIST = "https://api.github.com/users/%s/gists"
-ENDPOINT_GIST = "https://api.github.com/gists/%s"
-ENDPOINT_CREATE = "https://api.github.com/gists"
 
 
 # def list_gists(username=None, password=None):
-def list_gists(username=None, password=None):
+def list_gists(username, password, facade=GithubFacade()):
     """ Retrieve the list of gists. """
 
-    url = ENDPOINT_LIST % (username)
-
-    headers = {}
-    if password:
-        # if private, set the 'Authentication' header
-        encoded_authentication_string = encode_auth(username, password)
-        headers["Authorization"] = "Basic " + encoded_authentication_string
-
-    response = GithubFacade().requestEntity(url, headers=headers)
+    response = facade.request_list_of_gists(username, password)
 
     # put into a table the gists
     if response.ok:
@@ -28,22 +16,15 @@ def list_gists(username=None, password=None):
         for gist in response.json:
             list_gists.append(gistobj.Gist(gist))
 
-        result = Result()
-        result.success = True
-        result.data = list_gists
+        return build_result(True, list_gists)
     else:
-        result = Result()
-        result.success = False
-        result.data = ("Can not return the list of gists."
-                        " Github reason: '%s'""") % (response.json['message'])
-    return result
+        return build_result(False, literals.LISTS_ERROR,
+                response.json['message'])
 
 
-def get(gist_id, requested_file, destination_dir):
+def get(gist_id, requested_file, destination_dir, facade=GithubFacade()):
 
-    url = ENDPOINT_GIST % (gist_id)
-
-    response = GithubFacade().requestEntity(url)
+    response = facade.request_gist(gist_id)
     result = Result()
 
     if response.ok:
@@ -53,20 +34,18 @@ def get(gist_id, requested_file, destination_dir):
             gistfile = gist_obj.files[0]
             download(gistfile.raw_url, destination_dir,
                     gistfile.filename, gistfile.size)
-            result.success = True
-            result.data = "File " + gistfile.filename
-            result.data += " download successfully."
+            return build_result(True, literals.DOWNLOAD_OK, gistfile.filename)
         else:
             if not requested_file:
-                result.success = False
-                result.data = ("Gist has more than one file. "
-                       "Specify file by '-f' option. Available values are {%s}"
-                      ) % (", ".join(list_names))
+                list_names = ", ".join(list_names)
+                return build_result(False, literals.DOWNLOAD_MORE_FILES,
+                        list_names)
             else:
                 gistfile = gist_obj.getFile(requested_file)
                 if gistfile:
                     download(gistfile.raw_url, destination_dir,
                             gistfile.filename, gistfile.size)
+                    build_result(True, literals.DOWNLOAD_OK, gistfile.filename)
                     result.success = True
                     result.data = "File " + gistfile.filename
                     result.data += " download successfully."
@@ -84,12 +63,10 @@ def get(gist_id, requested_file, destination_dir):
     return result
 
 
-def show(gist_id, requested_file):
+def show(gist_id, requested_file, facade=GithubFacade()):
     """ Retrieve a single gist . """
 
-    url = ENDPOINT_GIST % (gist_id)
-
-    response = GithubFacade().requestEntity(url)
+    response = facade.request_gist(gist_id)
     result = Result()
 
     if response.ok:
@@ -123,7 +100,8 @@ def show(gist_id, requested_file):
     return result
 
 
-def post(username, password, public, upload_file, description):
+def post(username, password, public, upload_file, description,
+        facade=GithubFacade()):
 
     # prepare the content
     gistFile = gistobj.GistFile()
@@ -132,22 +110,16 @@ def post(username, password, public, upload_file, description):
         file_content = f.read()
         gistFile.content = file_content
 
-    # prepare the gist file
+    # prepare the gist file object
     gist = gistobj.Gist()
     if description:
         gist.description = description
     gist.public = public
     gist.addFile(gistFile)
 
-    # prepare the request
-    headers = {}
-    encoded_authentication_string = encode_auth(username, password)
-    headers["Authorization"] = "Basic " + encoded_authentication_string
-
     # parse the response
     print "Uploading gist....",
-    response = GithubFacade().createEntity(ENDPOINT_CREATE,
-            payload=gist, headers=headers)
+    response = facade.create_gist(gist, username, password)
     result = Result()
     if response.ok:
         print "Done!"
@@ -164,26 +136,20 @@ def post(username, password, public, upload_file, description):
     return result
 
 
-def delete(gistid, username, password):
+def delete(gistid, username, password, facade=GithubFacade()):
 
-    url = ENDPOINT_GIST % (gistid)
-
-    response = GithubFacade().requestEntity(url)
+    response = facade.request_gist(gistid)
     result = Result()
 
     if response.ok:
-        value_raw_input = (("Are your sure you want to delete gist %s [yN]: ")
+        value_raw_input = (("Are you sure you want to delete gist %s [yN]: ")
             % (gistid))
         value = raw_input(value_raw_input)
         accepted_values_for_yes = ["y", "yes", "ofcourse", "ye"]
         if value.lower() in accepted_values_for_yes:
 
             # prepare the request
-            headers = {}
-            encoded_authentication_string = encode_auth(username, password)
-            headers["Authorization"] = "Basic " + encoded_authentication_string
-
-            response = GithubFacade().deleteEntity(url, headers)
+            response = facade.delete_gist(gistid, username, password)
             if response.ok:
                 result.success = True
                 result.data = "Gist %s deleted successfully" % (gistid)
@@ -202,5 +168,11 @@ def delete(gistid, username, password):
     return result
 
 
-def update(gistid, username, password, description, filename, new, public):
-    return "yes"
+def update(gistid, username, password, description, filename,
+        new, remove, facade=GithubFacade()):
+
+    gist = facade.request_gist(gistid)
+
+    # prepare the request
+    response = facade.updateEntity(gist, username, password)
+    print response.json

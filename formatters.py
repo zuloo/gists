@@ -25,7 +25,7 @@ def format_post(result):
 def format_get(result):
 
     if result.success:
-        return "File downloaded!"
+        return result.data
     else:
         return __format_error(result.data)
 

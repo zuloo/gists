@@ -57,7 +57,8 @@ def handle_update(config, args):
                 parameter nor configuration file.  """
         sys.exit()
 
-    return args.gist_id, username, password, args.description, 
+    return (args.gist_id, username, password, args.description, args.filename,
+        args.new, args.remove)
 
 
 def handle_post(config, args):
