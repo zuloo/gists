@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import os
 
 
 def handle_list(config, args):
@@ -57,8 +58,16 @@ def handle_update(config, args):
                 parameter nor configuration file.  """
         sys.exit()
 
-    return (args.gist_id, username, password, args.description, args.filename,
-        args.new, args.remove)
+    if args.filename:
+        if args.input_dir:
+            source_file = os.path.join(args.input_dir, args.filename)
+        else:
+            source_file = os.path.join("./", args.filename)
+    else:
+        source_file = None
+
+    return (args.gist_id, username, password, args.description,
+            args.filename, source_file, args.new, args.remove)
 
 
 def handle_post(config, args):

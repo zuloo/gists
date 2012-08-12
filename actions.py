@@ -169,10 +169,69 @@ def delete(gistid, username, password, facade=GithubFacade()):
 
 
 def update(gistid, username, password, description, filename,
-        new, remove, facade=GithubFacade()):
+        filepath, new, remove, facade=GithubFacade()):
 
-    gist = facade.request_gist(gistid)
+    result = Result()
+    response = facade.request_gist(gistid)
+
+    if response.ok:
+        gist = gistobj.Gist(response.json)
+    else:
+        result.success = False
+        result.data = ("Can not get the gist."
+                        " Github reason: '%s'""") % (response.json['message'])
+        return result
+
+    if description:
+        gist.description = description
+
+    if filename:
+        file_obj = gist.getFile(filename)
+        if not file_obj:
+            if remove:
+                result.success = False
+                result.data = """Can not remove a file that actually does not
+                    exist in gist. """
+                return result
+            if new:
+                # Upload a new file to gist
+                gistFile = gistobj.GistFile()
+                gistFile.filename = filename
+                with open(filepath, 'r') as f:
+                    file_content = f.read()
+                    gistFile.content = file_content
+                gist.addFile(gistFile)
+            else:
+                # File not found and option --new it does not exist
+                result.success = False
+                result.data = """Filename not found in gist. Use the '-n'
+                    (--new) argument to attach a new file in the gist."""
+                return result
+        else:
+            if new:
+                # File not found and option --new it does not exist
+                result.success = False
+                result.data = """File already exists in Gist. Remove the
+                    'n' (--new) argument if you want to update the
+                    existent file. Change the file name if you actually want
+                    to update a new file in the gist."""
+                return result
+            if remove:
+                gist.setFile(filename, "null")
+            else:
+                with open(filepath, 'r') as f:
+                    file_content = f.read()
+                    file_obj.content = file_content
+                gist.setFile(filename, file_obj)
 
     # prepare the request
-    response = facade.updateEntity(gist, username, password)
-    print response.json
+    response = facade.update_gist(gist, username, password)
+    if response.ok:
+        result.success = True
+        result.data = gist
+    else:
+        result.success = False
+        result.data = ("Can not update the gist."
+                        " Github reason: '%s'""") % (response.json['message'])
+
+    return result

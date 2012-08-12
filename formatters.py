@@ -38,7 +38,10 @@ def format_delete(result):
 
 
 def format_update(result):
-    print result
+    if result.success:
+        return __format_gist(result.data)
+    else:
+        return __format_error(result.data)
 
 
 def format_list(result):
@@ -84,7 +87,7 @@ def __format_gist(gist):
 
     gists_string += colored.green('Files:\t\t')
     gist_names = [gistfile.filename for
-            gistfile in gist.files]
+                    gistfile in gist.files]
     stringfiles = "[" + ", ".join(gist_names) + "]"
     gists_string += colored.red(stringfiles) + '\n'
 

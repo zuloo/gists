@@ -45,8 +45,9 @@ class Gist(dict):
         """ Parse the 'self['files']' into GistFile objects. """
         if not 'files' in self:
             self['files'] = {}
+            return self['files']
         return [GistFile(self['files'][gistfile])
-                for gistfile in self['files']]
+                for gistfile in self['files'] if self['files'][gistfile] != 'null']
 
     def getFile(self, requested_filename):
         candidates = [gistfile for gistfile in self.files
@@ -54,6 +55,9 @@ class Gist(dict):
         if len(candidates) == 0:
             return None
         return candidates[0]
+
+    def setFile(self, filename, gist_file):
+        self['files'][filename] = gist_file
 
     def addFile(self, gistfile):
         if not 'files' in self:
