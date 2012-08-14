@@ -1,6 +1,6 @@
 from setuptools import setup
 
-README = open('README').read()
+README = open('README.md').read()
 
 setup(
         name='gists',
@@ -13,6 +13,7 @@ setup(
         install_requires=['requests', 'clint'],
         scripts=['gists/gists'],
         include_package_data=True,
+        long_description = README,
         classifiers=[
             "Programming Language :: Python",
             "Programming Language :: Python :: 2.6",
