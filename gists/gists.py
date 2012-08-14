@@ -8,7 +8,7 @@ from formatters import format_list, format_post, format_update
 from formatters import format_get, format_show, format_delete
 
 
-def main(*args, **kwargs):
+def run(*args, **kwargs):
 
     # Load the configuration instance
     config = utils.GistsConfigurer()
@@ -139,7 +139,3 @@ def main(*args, **kwargs):
     # (that must be a single object)
     result_formatted = args.formatter(result)
     print result_formatted
-
-
-if __name__ == '__main__':
-    main()

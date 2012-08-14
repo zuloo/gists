@@ -1,5 +1,5 @@
 Gists
-=====
+-----
 
 CLI interface for managing GitHub gists
 
@@ -15,4 +15,12 @@ action that needs authentication.
 How it works
 ------------
 
-TODO
+Already TODO
+
+
+Disclaimer
+----------
+
+This package is currently in 'Beta' relase. This means that even is quite stable and it is
+not going to break your gists, some exceptions may be not handled in the proper way and some
+functionality is not completely tested.

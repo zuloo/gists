@@ -1,138 +1,186 @@
-#!/usr/env/bin python
+# Copyright (c) 2012 <Jaume Devesa (jaumedevesa@gmail.com)>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# 'actions' module is the responsible to execute the business logic of each one
+# of the available actions, call the GithubFacade to retrieve the
+# Github API response, and handles errors and responses.
+
 from utils import GithubFacade, Result, download, build_result
 import literals
 import gistobj
 
 
-# def list_gists(username=None, password=None):
 def list_gists(username, password, facade=GithubFacade()):
-    """ Retrieve the list of gists. """
+    """ Retrieve the list of gists for a concrete user. """
 
     response = facade.request_list_of_gists(username, password)
 
-    # put into a table the gists
     if response.ok:
+        # List of gists for the requested user found.
         list_gists = []
         for gist in response.json:
             list_gists.append(gistobj.Gist(gist))
 
         return build_result(True, list_gists)
     else:
+        # GitHub response error. Parse the response
         return build_result(False, literals.LISTS_ERROR,
                 response.json['message'])
 
 
 def get(gist_id, requested_file, destination_dir, facade=GithubFacade()):
+    """ Download a gist file.
 
+    Gists can have several files. This method searches for and downloads
+    a single file from a gist.
+    If the 'requested_file' is not informed, then it won't raise an error
+    only if the gist have just a single file.
+    """
+
+    # Get the gist information
     response = facade.request_gist(gist_id)
-    result = Result()
 
     if response.ok:
+        # Gist file found. Parse it into a 'gistobj.Gist' class.
         gist_obj = gistobj.Gist(response.json)
         list_names = [gistfile.filename for gistfile in gist_obj.files]
+
         if len(gist_obj.files) == 1 and not requested_file:
+            # Download the only file in the gist
             gistfile = gist_obj.files[0]
             download(gistfile.raw_url, destination_dir,
                     gistfile.filename, gistfile.size)
-            return build_result(True, literals.DOWNLOAD_OK, gistfile.filename)
+
+            result = build_result(True, literals.DOWNLOAD_OK,
+                    gistfile.filename)
         else:
+            # Gist have more than one file and filename not specified. Error
             if not requested_file:
                 list_names = ", ".join(list_names)
-                return build_result(False, literals.DOWNLOAD_MORE_FILES,
+                result = build_result(False, literals.DOWNLOAD_MORE_FILES,
                         list_names)
             else:
+                # Search for the Gist file
                 gistfile = gist_obj.getFile(requested_file)
                 if gistfile:
+
+                    # Gist file found. Download it.
                     download(gistfile.raw_url, destination_dir,
                             gistfile.filename, gistfile.size)
-                    build_result(True, literals.DOWNLOAD_OK, gistfile.filename)
-                    result.success = True
-                    result.data = "File " + gistfile.filename
-                    result.data += " download successfully."
+
+                    result = build_result(True, literals.DOWNLOAD_OK,
+                            gistfile.filename)
                 else:
-                    result.success = False
-                    result.data = ("File not found in gist. "
-                         " Available values are {%s}"
-                         ) % (", ".join(list_names))
+                    # Requested file not found in Gist
+                    list_of_names = ", ".join(list_names)
+                    result = build_result(False,
+                            literals.FILE_NOT_FOUND, list_of_names)
 
     else:
-        result.success = False
-        result.data = ("Can not download the gist."
-                        " Github reason: '%s'""") % (response.json['message'])
+        # Handle GitHub response error
+        result = build_result(False, literals.DOWNLOAD_ERROR,
+                response.json['message'])
 
     return result
 
 
 def show(gist_id, requested_file, facade=GithubFacade()):
-    """ Retrieve a single gist . """
+    """ Retrieve a single gist.
 
+    If the 'requested_file' is None, then it will show the
+    'metadata' of the Gist. This is: its description, urls, file names..
+
+    If the 'requested_file' is informed, then it will show
+    the content of the gist file.
+    """
+
+    # get the gist information
     response = facade.request_gist(gist_id)
-    result = Result()
 
     if response.ok:
+        # Gist found. Parse the json response into the 'gistobj.Gist' class
         gist_obj = gistobj.Gist(response.json)
-        list_names = [gistfile.filename for gistfile in gist_obj.files]
         if not requested_file:
-            result.success = True
-            result.data = gist_obj
+            # Fill the response with the metadata of the gist
+            result = build_result(True, gist_obj)
         else:
-            if not requested_file:
-                result.success = False
-                result.data = ("Gist has more than one file. "
-                       "Specify file by '-f' option. Available values are {%s}"
-                      ) % (", ".join(list_names))
+            # We want to return the content of the file. Search for the content
+            list_names = [gistfile.filename for gistfile in gist_obj.files]
+            file_gist = gist_obj.getFile(requested_file)
+            if file_gist:
+                # Fill the response with the metadata of the gist
+                result = build_result(True, file_gist)
             else:
-                file_gist = gist_obj.getFile(requested_file)
-                if file_gist:
-                    result.success = True
-                    result.data = file_gist
-                else:
-                    result.success = False
-                    result.data = ("File not found in gist. "
-                         " Available values are {%s}"
-                         ) % (", ".join(list_names))
+                # File not found in Gist
+                list_of_names = ", ".join(list_names)
+                result = build_result(False,
+                        literals.FILE_NOT_FOUND, list_of_names)
 
     else:
-        result.success = False
-        result.data = ("Can not show the gist."
-                        " Github reason: '%s'""") % (response.json['message'])
+        # GitHub response not ok. Parse the response
+        result = build_result(False, literals.SHOW_ERROR,
+                response.json['message'])
 
     return result
 
 
 def post(username, password, public, upload_file, description,
         facade=GithubFacade()):
+    """ Create a new Gist.
 
-    # prepare the content
+    Currently only support create Gist with single files. (Then you can
+    'update' the gist and attach more files in it, but the creation only
+    supports one file)
+
+    You are able to specify if you want to create a public or private
+    gist and set its description.
+    """
+
+    # Prepare the content reading the file
     gistFile = gistobj.GistFile()
     gistFile.filename = upload_file
     with open(upload_file, 'r') as f:
         file_content = f.read()
         gistFile.content = file_content
 
-    # prepare the gist file object
+    # Prepare the Gist file object and set its description and 'public' value
     gist = gistobj.Gist()
     if description:
         gist.description = description
     gist.public = public
     gist.addFile(gistFile)
 
-    # parse the response
     print "Uploading gist....",
     response = facade.create_gist(gist, username, password)
-    result = Result()
+    # Parse the response
     if response.ok:
         print "Done!"
         gist = gistobj.Gist(response.json)
-        result.success = True
-        result.data = gistobj.Gist(response.json)
+        result = build_result(True, gistobj.Gist(response.json))
     else:
         print "Fail!"
         result.success = False
         if response.json:
-            result.data = response.json['message']
+            result = build_result(False, response.json['message'])
         else:
-            result.data = "Unhandled exception"
+            result = build_result(False, literals.UNHANDLED_EXCEPTION)
     return result
 
 
