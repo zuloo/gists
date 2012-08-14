@@ -12,6 +12,7 @@ setup(
         description='CLI interface for manage Github gists',
         install_requires=['requests', 'clint'],
         scripts=['gists/gists'],
+        include_package_data=True,
         classifiers=[
             "Programming Language :: Python",
             "Programming Language :: Python :: 2.6",

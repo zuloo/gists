@@ -12,7 +12,15 @@ time you perform an action, and '-s (--secret)' argument every time you perform 
 action that needs authentication.
 
 
-How it works
-------------
+Disclaimer
+----------
 
-TODO
+This package is currently in 'Beta' relase. This means that even is quite stable and it is
+not going to break your gists, some exceptions may be not handled in the proper way and some
+functionality is not completely tested.
+
+Fork it
+-------
+
+Fork it, download, follow it or whatever here: (http://github.com/jdevesa/gists)
+

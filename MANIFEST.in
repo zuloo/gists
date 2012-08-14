@@ -1,3 +1,3 @@
 include README.md
 include COPYING.txt
-include gists.rc
+include gistsrc

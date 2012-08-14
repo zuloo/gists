@@ -81,7 +81,7 @@ class GistsConfigurer(object):
     def __init__(self):
         """ Initializes the 'ConfigParser' instance. """
         self.config = ConfigParser()
-        self.config.read([os.path.expanduser('~/.gists.rc')])
+        self.config.read([os.path.expanduser('~/.gistsrc')])
 
     def getConfigUser(self):
         """ Returns the user from the configuration file.
