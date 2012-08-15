@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 import argparse
-import utils
-from actions import list_gists, show, get, post, delete, update
-from handlers import handle_list, handle_show, handle_update
+from actions import list_gists, show, get, post, delete, update, configure
+from handlers import handle_list, handle_show, handle_update, handle_configure
 from handlers import handle_get, handle_post, handle_delete
 from formatters import format_list, format_post, format_update
-from formatters import format_get, format_show, format_delete
+from formatters import format_get, format_show, format_delete, format_configure
 
 
 def run(*args, **kwargs):
 
     # Load the configuration instance
-    config = utils.GistsConfigurer()
 
     # Initialize argument's parser
     parser = argparse.ArgumentParser(
@@ -125,12 +123,24 @@ def run(*args, **kwargs):
     parser_delete.set_defaults(handle_args=handle_delete, func=delete,
             formatter=format_delete)
 
+    # Add the subparser to handle the 'configure' action.
+    parser_configure = subparsers.add_parser("credentials",
+            help="Configure your 'gists' module")
+    parser_configure.add_argument("-u", "--user",
+            help="""Configure your GitHub user in your ~/.gistsrc file. """,
+            required=True)
+    parser_configure.add_argument("-s", "--secret",
+            help="""Configure your Github password in your ~/.gistsrc file.""",
+            required=True)
+    parser_configure.set_defaults(handle_args=handle_configure, func=configure,
+            formatter=format_configure)
+
     # parse the arguments
     args = parser.parse_args()
 
     # calling the handle_args function defined, parsing the args and return
     # and object with the needed values to execute the function
-    parameters = args.handle_args(config, args)
+    parameters = args.handle_args(args)
 
     # passing the 'parameters' object as array of parameters
     result = args.func(*parameters)

@@ -13,7 +13,8 @@ setup(
         install_requires=['requests', 'clint'],
         scripts=['gists/gists'],
         include_package_data=True,
-        long_description = README,
+        long_description=README,
+        license='MIT',
         classifiers=[
             "Programming Language :: Python",
             "Programming Language :: Python :: 2.6",
