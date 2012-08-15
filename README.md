@@ -8,9 +8,9 @@ Configure
 
 First time you run 'gists', execute the command
 
-```bash
+``
 $ gists credentials -u your_github_user -s your_github_password
-```
+``
 
 And the file ~/.gistsrc (which stores the 'gists' configuration) will be written.
 You can live without this config file using the '-u (--user)' argument every
