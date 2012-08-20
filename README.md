@@ -6,8 +6,14 @@ CLI interface for managing GitHub gists
 Configure
 ---------
 
-Copy the gistsrc file to ~/.gistsrc and edit your github username and password.
-You can live without this config file using always the '-u (--user)' argument every
+First time you run 'gists', execute the command
+
+``
+$ gists credentials -u your_github_user -s your_github_password
+``
+
+And the file ~/.gistsrc (which stores the 'gists' configuration) will be written.
+You can live without this config file using the '-u (--user)' argument every
 time you perform an action, and '-s (--secret)' argument every time you perform an 
 action that needs authentication.
 

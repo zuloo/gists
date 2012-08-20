@@ -22,7 +22,7 @@
 # of the available actions, call the GithubFacade to retrieve the
 # Github API response, and handles errors and responses.
 
-from utils import GithubFacade, download, build_result
+from utils import GithubFacade, download, build_result, GistsConfigurer
 import literals
 import gistobj
 
@@ -274,3 +274,14 @@ def update(gistid, username, password, description, filename,
     else:
         return build_result(False, literals.UPDATE_NOK,
                 response.json['message'])
+
+    return result
+
+
+def configure(username, password):
+    """ Configure the user and password of the GitHub user. """
+
+    configurer = GistsConfigurer()
+    configurer.setConfigUser(username)
+    configurer.setConfigPassword(password)
+    return

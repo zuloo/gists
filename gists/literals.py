@@ -47,3 +47,8 @@ UPDATE_RM_NF = "Can not remove a file that actually does not exist in gist. "
 
 UPDATE_NF = ("Filename not found in gist. Use the '-n' (--new) argument"
         "to attach a new file in the gist.")
+
+UPDATE_NEW_DUP = """File already exists in Gist. Remove the
+                    'n' (--new) argument if you want to update the
+                    existent file. Change the file name if you actually want
+                    to update a new file in the gist."""

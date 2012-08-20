@@ -20,9 +20,12 @@
 
 import sys
 import os
+import utils
+
+config = utils.GistsConfigurer()
 
 
-def handle_list(config, args):
+def handle_list(args):
     """ Handle the arguments to call the 'list gists' functionality. """
 
     # Get the 'user' argument if exists, otherwise take it from configuration
@@ -54,7 +57,7 @@ def handle_list(config, args):
     return username, password
 
 
-def handle_update(config, args):
+def handle_update(args):
     # Get the 'user' argument if exists, otherwise take it from configuration
     # file. If 'user' can not be loaded, raise an exception
     if args.user:
@@ -89,7 +92,7 @@ def handle_update(config, args):
             args.filename, source_file, args.new, args.remove)
 
 
-def handle_post(config, args):
+def handle_post(args):
     # Get the 'user' argument if exists, otherwise take it from configuration
     # file. If 'user' can not be loaded, raise an exception
     if args.user:
@@ -120,17 +123,17 @@ def handle_post(config, args):
     return username, password, public, args.file, args.description
 
 
-def handle_show(config, args):
+def handle_show(args):
     """ Handle the arguments to call the 'show' gists functionality. """
     return args.gist_id, args.filename
 
 
-def handle_get(config, args):
+def handle_get(args):
     """ Handle the arguments to call the 'get' gists functionality. """
     return args.gist_id, args.filename, args.target_dir
 
 
-def handle_delete(config, args):
+def handle_delete(args):
     # Get the 'user' argument if exists, otherwise take it from configuration
     # file. If 'user' can not be loaded, raise an exception
     if args.user:
@@ -138,8 +141,8 @@ def handle_delete(config, args):
     else:
         username = config.getConfigUser()
     if not username:
-        print """Can not load github username neither from '--user (-u)'
-                parameter nor configuration file.  """
+        print ("Can not load github username neither from '--user (-u)'"
+               "parameter nor configuration file.")
         sys.exit()
 
     # Get the 'secret' argument if exists, otherwise take it from configuration
@@ -154,3 +157,7 @@ def handle_delete(config, args):
         sys.exit()
 
     return args.gist_id, username, password
+
+
+def handle_configure(args):
+    return args.user, args.secret

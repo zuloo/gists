@@ -114,6 +114,10 @@ def __format_gist(gist):
     return gists_string
 
 
+def format_configure(data):
+    return "File '~/.gistsrc' overrided!"
+
+
 def __format_error(data):
     return colored.red("Error: ") + data
 

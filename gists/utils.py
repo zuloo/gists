@@ -99,7 +99,13 @@ class GistsConfigurer(object):
     def __init__(self):
         """ Initializes the 'ConfigParser' instance. """
         self.config = ConfigParser()
-        self.config.read([os.path.expanduser('~/.gistsrc')])
+        self.config_file_path = os.path.expanduser('~/.gistsrc')
+        if os.path.exists(self.config_file_path):
+            self.config.read(self.config_file_path)
+        else:
+            with open(self.config_file_path, 'w'):
+                # just create the file
+                pass
 
     def getConfigUser(self):
         """ Returns the user from the configuration file.
@@ -113,6 +119,13 @@ class GistsConfigurer(object):
         username = self.config.get('credentials', 'user')
         return username
 
+    def setConfigUser(self, user):
+        if not self.config.has_section('credentials'):
+            self.config.add_section('credentials')
+        self.config.set('credentials', 'user', user)
+        with open(self.config_file_path, 'w') as f:
+            self.config.write(f)
+
     def getConfigPassword(self):
         """ Loads the password from configuration instance.
 
@@ -123,6 +136,13 @@ class GistsConfigurer(object):
             return None
         password = self.config.get('credentials', 'password')
         return password
+
+    def setConfigPassword(self, password):
+        if not self.config.has_section('credentials'):
+            self.config.add_section('credentials')
+        self.config.set('credentials', 'password', password)
+        with open(self.config_file_path, 'w') as f:
+            self.config.write(f)
 
 
 def download(url, destination_dir, file_name, file_size):
