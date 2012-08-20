@@ -22,7 +22,7 @@
 # of the available actions, call the GithubFacade to retrieve the
 # Github API response, and handles errors and responses.
 
-from utils import GithubFacade, Result, download, build_result
+from utils import GithubFacade, download, build_result
 import literals
 import gistobj
 
@@ -185,62 +185,63 @@ def post(username, password, public, upload_file, description,
 
 
 def delete(gistid, username, password, facade=GithubFacade()):
+    """ Just deletes a gist. """
 
+    # First check if the gist exists
     response = facade.request_gist(gistid)
-    result = Result()
 
     if response.ok:
-        value_raw_input = (("Are you sure you want to delete gist %s [yN]: ")
-            % (gistid))
+
+        # Gist Found. Ask for confirmation
+        value_raw_input = (literals.DELETE_CONFIRMATION) % (gistid)
         value = raw_input(value_raw_input)
         accepted_values_for_yes = ["y", "yes", "ofcourse", "ye"]
         if value.lower() in accepted_values_for_yes:
 
-            # prepare the request
+            # Perform the deletion
             response = facade.delete_gist(gistid, username, password)
             if response.ok:
-                result.success = True
-                result.data = "Gist %s deleted successfully" % (gistid)
+                result = build_result(True, literals.DELETE_OK, gistid)
+
             else:
-                result.success = False
-                result.data = ("Can not delete the gist."
-                        " Github reason: '%s'""") % (response.json['message'])
+                res_message = response.json['message']
+                result = build_result(False, literals.DELETE_NOK, res_message)
         else:
-            result.success = False
-            result.data = "Delete aborted"
+            # Aborted mission
+            result = build_result(False, literals.DELETE_ABORTED)
     else:
-        result.success = False
-        result.data = ("Can not delete the gist."
-                        " Github reason: '%s'""") % (response.json['message'])
+        # Gist not retrieved.
+        res_message = response.json['message']
+        result = build_result(False, literals.DELETE_NOK, res_message)
 
     return result
 
 
 def update(gistid, username, password, description, filename,
         filepath, new, remove, facade=GithubFacade()):
+    """ Updates a gist. """
 
-    result = Result()
+    # First get the result
     response = facade.request_gist(gistid)
 
     if response.ok:
+        # Gist found.
         gist = gistobj.Gist(response.json)
     else:
-        result.success = False
-        result.data = ("Can not get the gist."
-                        " Github reason: '%s'""") % (response.json['message'])
+        result = build_result(False, literals.UPDATE_NOK,
+                response.json['message'])
         return result
 
     if description:
+        # Update the description of a Gist if requested
         gist.description = description
 
     if filename:
+        # File to update
         file_obj = gist.getFile(filename)
         if not file_obj:
             if remove:
-                result.success = False
-                result.data = """Can not remove a file that actually does not
-                    exist in gist. """
-                return result
+                return build_result(False, literals.UPDATE_RM_NF)
             if new:
                 # Upload a new file to gist
                 gistFile = gistobj.GistFile()
@@ -251,22 +252,16 @@ def update(gistid, username, password, description, filename,
                 gist.addFile(gistFile)
             else:
                 # File not found and option --new it does not exist
-                result.success = False
-                result.data = """Filename not found in gist. Use the '-n'
-                    (--new) argument to attach a new file in the gist."""
-                return result
+                return build_result(False, literals.UPDATE_NF)
         else:
             if new:
                 # File not found and option --new it does not exist
-                result.success = False
-                result.data = """File already exists in Gist. Remove the
-                    'n' (--new) argument if you want to update the
-                    existent file. Change the file name if you actually want
-                    to update a new file in the gist."""
-                return result
+                return build_result(False, literals.UPDATE_NEW_DUP)
             if remove:
+                # Remove a file
                 gist.setFile(filename, "null")
             else:
+                # Update the contents of the file
                 with open(filepath, 'r') as f:
                     file_content = f.read()
                     file_obj.content = file_content
@@ -275,11 +270,7 @@ def update(gistid, username, password, description, filename,
     # prepare the request
     response = facade.update_gist(gist, username, password)
     if response.ok:
-        result.success = True
-        result.data = gist
+        return build_result(True, gist)
     else:
-        result.success = False
-        result.data = ("Can not update the gist."
-                        " Github reason: '%s'""") % (response.json['message'])
-
-    return result
+        return build_result(False, literals.UPDATE_NOK,
+                response.json['message'])
