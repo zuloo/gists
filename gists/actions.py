@@ -176,7 +176,7 @@ def post(username, password, public, upload_file, description,
         result = build_result(True, gistobj.Gist(response.json))
     else:
         print "Fail!"
-        result.success = False
+        print response.status_code
         if response.json:
             result = build_result(False, response.json['message'])
         else:
