@@ -24,11 +24,27 @@
 
 from utils import GithubFacade, download, build_result, GistsConfigurer
 import literals
-import gistobj
+import model
+
+"""
+
+gists.actions
+~~~~~~~~~~~~~~~~
+
+Actions is the main module of the package. It receives data from the 'handlers'
+module, call to GitHub Gists API and manage the response.
+
+
+"""
 
 
 def list_gists(username, password, facade=GithubFacade()):
-    """ Retrieve the list of gists for a concrete user. """
+    """ Retrieve the list of gists for a concrete user.
+
+    :param username: GitHub user name
+    :param password: GitHub user password
+    :param facade: instance of the object that actually performs the request
+    """
 
     response = facade.request_list_of_gists(username, password)
 
@@ -36,7 +52,7 @@ def list_gists(username, password, facade=GithubFacade()):
         # List of gists for the requested user found.
         list_gists = []
         for gist in response.json:
-            list_gists.append(gistobj.Gist(gist))
+            list_gists.append(model.Gist(gist))
 
         return build_result(True, list_gists)
     else:
@@ -52,14 +68,19 @@ def get(gist_id, requested_file, destination_dir, facade=GithubFacade()):
     a single file from a gist.
     If the 'requested_file' is not informed, then it won't raise an error
     only if the gist have just a single file.
+
+    :param gist_id: identifier of the gist to download
+    :param requested_file: name of the Gist file to download
+    :param destination_dir: destination directory after the download
+    :param facade: instance of the object that actually perform the request
     """
 
     # Get the gist information
     response = facade.request_gist(gist_id)
 
     if response.ok:
-        # Gist file found. Parse it into a 'gistobj.Gist' class.
-        gist_obj = gistobj.Gist(response.json)
+        # Gist file found. Parse it into a 'model.Gist' class.
+        gist_obj = model.Gist(response.json)
         list_names = [gistfile.filename for gistfile in gist_obj.files]
 
         if len(gist_obj.files) == 1 and not requested_file:
@@ -109,14 +130,18 @@ def show(gist_id, requested_file, facade=GithubFacade()):
 
     If the 'requested_file' is informed, then it will show
     the content of the gist file.
+
+    :param gist_id: identifier of the Gist to print
+    :param requested_file: Gist File to show
+    :param facade: instance of the object that actually performs the request
     """
 
     # get the gist information
     response = facade.request_gist(gist_id)
 
     if response.ok:
-        # Gist found. Parse the json response into the 'gistobj.Gist' class
-        gist_obj = gistobj.Gist(response.json)
+        # Gist found. Parse the json response into the 'model.Gist' class
+        gist_obj = model.Gist(response.json)
         if not requested_file:
             # Fill the response with the metadata of the gist
             result = build_result(True, gist_obj)
@@ -151,31 +176,38 @@ def post(username, password, public, upload_file, description,
 
     You are able to specify if you want to create a public or private
     gist and set its description.
+
+    :param username: GitHub user name
+    :param password: GitHub user password
+    :param public: whenever new Gist should be public or private
+    :param upload_file: input file to upload
+    :param description: brief description of the Gist
+    :param facade: instance of the object that actually performs the request
     """
 
     # Prepare the content reading the file
-    gistFile = gistobj.GistFile()
+    gistFile = model.GistFile()
     gistFile.filename = upload_file
     with open(upload_file, 'r') as f:
         file_content = f.read()
         gistFile.content = file_content
 
     # Prepare the Gist file object and set its description and 'public' value
-    gist = gistobj.Gist()
+    gist = model.Gist()
     if description:
         gist.description = description
     gist.public = public
     gist.addFile(gistFile)
 
-    print "Uploading gist....",
+    print "Uploading gist....\n",
     response = facade.create_gist(gist, username, password)
     # Parse the response
     if response.ok:
-        print "Done!"
-        gist = gistobj.Gist(response.json)
-        result = build_result(True, gistobj.Gist(response.json))
+        print "\nDone!"
+        gist = model.Gist(response.json)
+        result = build_result(True, model.Gist(response.json))
     else:
-        print "Fail!"
+        print "\nFail!"
         print response.status_code
         if response.json:
             result = build_result(False, response.json['message'])
@@ -185,7 +217,13 @@ def post(username, password, public, upload_file, description,
 
 
 def delete(gistid, username, password, facade=GithubFacade()):
-    """ Just deletes a gist. """
+    """ Just deletes a gist.
+
+    :param gistid: identifier of the Gist to delete
+    :param username: GitHub user name
+    :param password: GitHub user password
+    :param facade: instance of the object that actually performs the request
+    """
 
     # First check if the gist exists
     response = facade.request_gist(gistid)
@@ -219,14 +257,26 @@ def delete(gistid, username, password, facade=GithubFacade()):
 
 def update(gistid, username, password, description, filename,
         filepath, new, remove, facade=GithubFacade()):
-    """ Updates a gist. """
+    """ Updates a gist.
+
+    :param gistid: identifier of the Gist to update
+    :param username: GitHub user name
+    :param password: GitHub user password
+    :param description: new description of the Gist. If 'None' it won't be
+    updated
+    :param filename: name of the file to modify its contents
+    :param filepath: input parameter path
+    :param new: whenever the file is new or already exists
+    :param remove: if the file should be deleted instead of modified
+    :param facade: instance of the object that actually performs the request
+    """
 
     # First get the result
     response = facade.request_gist(gistid)
 
     if response.ok:
         # Gist found.
-        gist = gistobj.Gist(response.json)
+        gist = model.Gist(response.json)
     else:
         result = build_result(False, literals.UPDATE_NOK,
                 response.json['message'])
@@ -244,7 +294,7 @@ def update(gistid, username, password, description, filename,
                 return build_result(False, literals.UPDATE_RM_NF)
             if new:
                 # Upload a new file to gist
-                gistFile = gistobj.GistFile()
+                gistFile = model.GistFile()
                 gistFile.filename = filename
                 with open(filepath, 'r') as f:
                     file_content = f.read()
@@ -279,7 +329,11 @@ def update(gistid, username, password, description, filename,
 
 
 def configure(username, password):
-    """ Configure the user and password of the GitHub user. """
+    """ Configure the user and password of the GitHub user.
+
+    :param username: new configuration GitHub user name
+    :param password: new configuration GitHub user password
+    """
 
     configurer = GistsConfigurer()
     configurer.setConfigUser(username)

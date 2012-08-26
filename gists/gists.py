@@ -19,6 +19,16 @@
 # THE SOFTWARE.
 
 
+"""
+
+gists.gists
+~~~~~~~~~~~
+
+This single-function module defines the input parameters and the subparsers,
+and coordinates the 'handlers'->'actions'->'formatters' execution workflow
+
+"""
+
 import argparse
 from actions import list_gists, show, get, post, delete, update, configure
 from handlers import handle_list, handle_show, handle_update, handle_configure
@@ -29,15 +39,46 @@ from formatters import format_get, format_show, format_delete, format_configure
 
 def run(*args, **kwargs):
 
-    # Load the configuration instance
-
     # Initialize argument's parser
     parser = argparse.ArgumentParser(
             description='Manage Github gists from CLI',
             epilog="Happy Gisting!")
 
-    # define subparsers to handle each action
+    # Define subparsers to handle each action
     subparsers = parser.add_subparsers(help="Available commands.")
+
+    # Add the subparsers
+    __add_list_parser(subparsers)
+    __add_show_parser(subparsers)
+    __add_get_parser(subparsers)
+    __add_create_parser(subparsers)
+    __add_update_parser(subparsers)
+    __add_delete_parser(subparsers)
+    __add_configure_parser(subparsers)
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Calling the handle_args function defined, parsing the args and return
+    # and object with the needed values to execute the function
+    parameters = args.handle_args(args)
+
+    # Passing the 'parameters' object as array of parameters
+    result = args.func(*parameters)
+
+    # Parsing the 'result' object to be output formatted.
+    # (that must be a single object)
+    result_formatted = args.formatter(result)
+
+    # Print the formatted output
+    print result_formatted
+
+
+def __add_list_parser(subparsers):
+    """ Define the subparser to handle the 'list' functionality.
+
+    :param subparsers: the subparser entity
+    """
 
     # Add the subparser to handle the list of gists
     parser_list = subparsers.add_parser("list", help="List gists")
@@ -54,6 +95,12 @@ def run(*args, **kwargs):
     parser_list.set_defaults(handle_args=handle_list,
             func=list_gists, formatter=format_list)
 
+
+def __add_show_parser(subparsers):
+    """ Define the subparser to handle with the 'show' functionallity.
+
+    :param subparsers: the subparser entity
+    """
     # Add the subparser to handle the 'show' action
     parser_show = subparsers.add_parser("show",
             help="""Show a gist. Shows the general gist data by default.
@@ -66,6 +113,13 @@ def run(*args, **kwargs):
     parser_show.set_defaults(handle_args=handle_show, func=show,
             formatter=format_show)
 
+
+def __add_get_parser(subparsers):
+    """ Define the subparser to handle the 'get' functionality.
+
+    :param subparsers: the subparser entity
+    """
+
     # Add the subparser to handle the 'get' action
     parser_get = subparsers.add_parser("get",
             help="""Download a single gist file. If the gist only
@@ -74,16 +128,23 @@ def run(*args, **kwargs):
             help="Identifier of the gist to retrieve")
     parser_get.add_argument("-f", "--filename",
             help="Gist file to download.")
-    parser_get.add_argument("-t", "--target_dir",
+    parser_get.add_argument("-o", "--output_dir",
             help="Destination directory",
             default=".")
     parser_get.set_defaults(handle_args=handle_get, func=get,
             formatter=format_get)
 
+
+def __add_create_parser(subparsers):
+    """ Define the subparser to handle the 'create' functionality.
+
+    :param subparsers: the subparser entity
+    """
+
     # Add the subparser to handle the 'create' action
     parser_post = subparsers.add_parser("create",
             help="Create a new gist")
-    parser_post.add_argument("-f", "--file",
+    parser_post.add_argument("-f", "--filename",
             help="Specify gist file to upload.", required=True)
     parser_post.add_argument("-u", "--user",
             help="""Github user. Overrides the default 'user' property
@@ -94,10 +155,19 @@ def run(*args, **kwargs):
     parser_post.add_argument("-p", "--private",
             help="""Private gist. (public by default)""",
             action="store_true")
+    parser_post.add_argument("-i", "--input_dir",
+            help="Input directory where the source file is")
     parser_post.add_argument("-d", "--description",
             help="escription for the gist to create")
     parser_post.set_defaults(handle_args=handle_post, func=post,
             formatter=format_post)
+
+
+def __add_update_parser(subparsers):
+    """ Define the subparser to handle the 'update' functionality.
+
+    :param subparsers: the subparser entity
+    """
 
     # Add the subparser to handle the 'update' action
     parser_update = subparsers.add_parser("update",
@@ -130,10 +200,17 @@ def run(*args, **kwargs):
     parser_update.set_defaults(handle_args=handle_update, func=update,
             formatter=format_update)
 
+
+def __add_delete_parser(subparsers):
+    """ Define the subparser to handle the 'delete' functionality.
+
+    :param subparsers: the subparser entity
+    """
+
     # Add the subparser to handle the 'delete' action
     parser_delete = subparsers.add_parser("delete", help="Delete a gist")
     parser_delete.add_argument("gist_id",
-            help="Identifier of the gist to delete")
+            help="Identifier of the Gist to delete")
     parser_delete.add_argument("-u", "--user",
             help="""Github user. Overrides the default 'user' property
             in configuration file""")
@@ -142,6 +219,13 @@ def run(*args, **kwargs):
             in configuration file""")
     parser_delete.set_defaults(handle_args=handle_delete, func=delete,
             formatter=format_delete)
+
+
+def __add_configure_parser(subparsers):
+    """ Define the subparser to handle the 'configure' functionality.
+
+    :param subparsers: the subparser entity
+    """
 
     # Add the subparser to handle the 'configure' action.
     parser_configure = subparsers.add_parser("credentials",
@@ -154,18 +238,3 @@ def run(*args, **kwargs):
             required=True)
     parser_configure.set_defaults(handle_args=handle_configure, func=configure,
             formatter=format_configure)
-
-    # parse the arguments
-    args = parser.parse_args()
-
-    # calling the handle_args function defined, parsing the args and return
-    # and object with the needed values to execute the function
-    parameters = args.handle_args(args)
-
-    # passing the 'parameters' object as array of parameters
-    result = args.func(*parameters)
-
-    # parsing the 'result' object to be output formatted.
-    # (that must be a single object)
-    result_formatted = args.formatter(result)
-    print result_formatted

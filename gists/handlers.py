@@ -18,10 +18,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+"""
+
+gists.handlers
+~~~~~~~~~~~~~~
+
+Handlers module contain all the fuctions that hanlde the input arguments from
+the command line, looking for incompatible arguments, and filling configuration
+data for the functions in 'actions' module.
+
+"""
+
 import sys
 import os
 import utils
+import literals
 
+
+# Load the configuration instance once the module is imported
 config = utils.GistsConfigurer()
 
 
@@ -35,8 +49,7 @@ def handle_list(args):
     else:
         username = config.getConfigUser()
     if not username:
-        print """Can not load github username neither from '--user (-u)'
-                parameter nor configuration file.  """
+        print literals.USER_NOT_FOUND
         sys.exit()
 
     # If '--private' option, password becomes mandatory. Load it. """
@@ -48,8 +61,7 @@ def handle_list(args):
             password = config.getConfigPassword()
         # Check if we have actually a password
         if not password:
-            print """Password should be informed via
-                     configuration file or '-s' argument"""
+            print literals.PASSWORD_NOT_FOUND
             sys.exit()
     else:
         password = None
@@ -58,6 +70,8 @@ def handle_list(args):
 
 
 def handle_update(args):
+    """ Handle the arguments to call the 'update gist' functionality. """
+
     # Get the 'user' argument if exists, otherwise take it from configuration
     # file. If 'user' can not be loaded, raise an exception
     if args.user:
@@ -65,8 +79,7 @@ def handle_update(args):
     else:
         username = config.getConfigUser()
     if not username:
-        print """Can not load github username neither from '--user (-u)'
-                parameter nor configuration file.  """
+        print literals.USER_NOT_FOUND
         sys.exit()
 
     # Get the 'secret' argument if exists, otherwise take it from configuration
@@ -76,10 +89,10 @@ def handle_update(args):
     else:
         password = config.getConfigPassword()
     if not password:
-        print """Can not load github password neither from '--secret (-s)'
-                parameter nor configuration file.  """
+        print literals.PASSWORD_NOT_FOUND
         sys.exit()
 
+    # Define the source file
     if args.filename:
         if args.input_dir:
             source_file = os.path.join(args.input_dir, args.filename)
@@ -93,6 +106,8 @@ def handle_update(args):
 
 
 def handle_post(args):
+    """ Handle the arguments to call the 'create gist' functionality. """
+
     # Get the 'user' argument if exists, otherwise take it from configuration
     # file. If 'user' can not be loaded, raise an exception
     if args.user:
@@ -100,8 +115,7 @@ def handle_post(args):
     else:
         username = config.getConfigUser()
     if not username:
-        print """Can not load github username neither from '--user (-u)'
-                parameter nor configuration file.  """
+        print literals.USER_NOT_FOUND
         sys.exit()
 
     # Get the 'secret' argument if exists, otherwise take it from configuration
@@ -111,29 +125,42 @@ def handle_post(args):
     else:
         password = config.getConfigPassword()
     if not password:
-        print """Can not load github password neither from '--secret (-s)'
-                parameter nor configuration file.  """
+        print literals.PASSWORD_NOT_FOUND
         sys.exit()
 
+    # Define public or private
     if args.private:
         public = False
     else:
         public = True
 
-    return username, password, public, args.file, args.description
+    # Define the source file
+    if args.filename:
+        if args.input_dir:
+            source_file = os.path.join(args.input_dir, args.filename)
+        else:
+            source_file = os.path.join("./", args.filename)
+    else:
+        source_file = None
+
+    return username, password, public, source_file, args.description
 
 
 def handle_show(args):
     """ Handle the arguments to call the 'show' gists functionality. """
+
     return args.gist_id, args.filename
 
 
 def handle_get(args):
     """ Handle the arguments to call the 'get' gists functionality. """
-    return args.gist_id, args.filename, args.target_dir
+
+    return args.gist_id, args.filename, args.output_dir
 
 
 def handle_delete(args):
+    """ Handle the arguments to call the 'delete' gists functionality. """
+
     # Get the 'user' argument if exists, otherwise take it from configuration
     # file. If 'user' can not be loaded, raise an exception
     if args.user:
@@ -141,8 +168,7 @@ def handle_delete(args):
     else:
         username = config.getConfigUser()
     if not username:
-        print ("Can not load github username neither from '--user (-u)'"
-               "parameter nor configuration file.")
+        print literals.USER_NOT_FOUND
         sys.exit()
 
     # Get the 'secret' argument if exists, otherwise take it from configuration
@@ -152,12 +178,11 @@ def handle_delete(args):
     else:
         password = config.getConfigPassword()
     if not password:
-        print """Can not load github password neither from '--secret (-s)'
-                parameter nor configuration file.  """
-        sys.exit()
+        print literals.PASSWORD_NOT_FOUND
 
     return args.gist_id, username, password
 
 
 def handle_configure(args):
+    """ Handle the arguments to call the 'configure' gists functionality. """
     return args.user, args.secret

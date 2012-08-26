@@ -5,7 +5,7 @@ README = open('README.md').read()
 setup(
         name='gists',
         packages=['gists'],
-        version='1.0-beta',
+        version='0.1',
         author='Jaume Devesa',
         author_email='jaumedevesa@gmail.com',
         url='http://github.com/jdevesa/gists',
@@ -15,11 +15,12 @@ setup(
         include_package_data=True,
         long_description=README,
         license='MIT',
+        test_suite='tests',
         classifiers=[
             "Programming Language :: Python",
             "Programming Language :: Python :: 2.6",
             "Programming Language :: Python :: 2.7",
-            "Development Status :: 4 - Beta ",
+            "Development Status :: 5 - Production/Stable ",
             "Environment :: Console",
             "Intended Audience :: Developers",
             "License :: OSI Approved :: MIT License",

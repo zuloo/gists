@@ -19,57 +19,117 @@
 # THE SOFTWARE.
 
 import os
-import gistobj
+import model
 from clint.textui import colored
+
+"""
+
+gists.formatters
+~~~~~~~~~~~~~~~~
+
+'formatters' is the last step of the execution workflow. All the methods
+receive an instance of the :class: `Result <Result>` and use them to format
+the output legible, clear and pretty (using the usefull 'clint' package)
+
+
+"""
 
 
 def format_show(result):
+    """ Formats the output of the 'show' action.
+
+    :param result: Result instance
+    """
+
     if result.success:
         resultdata = result.data
-        if isinstance(resultdata, gistobj.GistFile):
+
+        # If the data is an instance of the 'GistFile' data model,
+        # parse the file, otherwise, parse the 'Gist' metadata
+        if isinstance(resultdata, model.GistFile):
             return __format_file(resultdata)
         else:
             return __format_gist(resultdata)
     else:
+        # Format the error string message
         return __format_error(result.data)
 
 
 def format_post(result):
+    """ Formats the output of the 'create' action.
+
+    :param result: Result instance
+    """
+
     if result.success:
+        # Format the 'Gist' metadata object
         return __format_gist(result.data)
     else:
+        # Format the error string message
         return __format_error(result.data)
 
 
 def format_get(result):
+    """ Formats the output of the 'get/download' action.
+
+    :param result: Result instance
+    """
 
     if result.success:
+        # The result is just a string informing the success
         return result.data
     else:
+        # Format the error string message
         return __format_error(result.data)
 
 
 def format_delete(result):
+    """ Formats the output of the 'delete' action.
+
+    :param result: Result instance
+    """
+
     if result.success:
+        # The result is just a string informing the success
         return result.data
     else:
+        # Format the error string message
         return __format_error(result.data)
 
 
 def format_update(result):
+    """ Formats the output of the 'delete' action.
+
+    :param result: Result instance
+    """
+
     if result.success:
+        # Format the 'Gist' metadata object
         return __format_gist(result.data)
     else:
+        # Format the error string message
         return __format_error(result.data)
 
 
 def format_list(result):
-    if result.success is True:
+    """ Formats the output of the 'list' action.
+
+    :param result: Result instance
+    """
+    if result.success:
+
+        # Get the list of Gists from the data
         list_of_gists = result.data
+
+        # Calculate the number of columns of the current terminal window
         rows, columns = os.popen('stty size', 'r').read().split()
+
+        # Set the header
         gists_string = colored.cyan('-' * int(columns)) + "\n"
         gists_string += colored.cyan("List of gists\n")
         gists_string += colored.cyan('-' * int(columns)) + "\n"
+
+        # Set the contents for each Gist listed
         for gist in list_of_gists:
             gists_string += colored.green(gist.identifier + ": ")
             description = "(no desc)"
@@ -84,17 +144,36 @@ def format_list(result):
                 gists_string += " (Private) "
             gists_string += '\n'
 
+        # Set the footer
         gists_string += colored.cyan('-' * int(columns)) + "\n"
+
+        # Return the formatted String
         return gists_string
     else:
+        # Format the error string message
         return __format_error(result.data)
 
 
+def format_configure(data):
+    """ This is enough for this method. """
+    return "File '~/.gistsrc' overrided!"
+
+
 def __format_gist(gist):
+    """ Formats the output for a Gist metadata object.
+
+    :param gist: :class: `Gist <Gist>` instance.
+    """
+
+    # Calculate the number of columns of the current terminal window
     rows, columns = os.popen('stty size', 'r').read().split()
+
+    # Prepare the Header
     gists_string = colored.cyan('-' * int(columns)) + "\n"
     gists_string += colored.cyan("Gist [" + gist.identifier + "]") + '\n'
     gists_string += colored.cyan('-' * int(columns)) + "\n"
+
+    # Format Gist data
     gists_string += colored.green('Description:\t')
     gists_string += gist.description + '\n'
     gists_string += colored.green('Url:\t\t')
@@ -110,24 +189,31 @@ def __format_gist(gist):
     stringfiles = "[" + ", ".join(gist_names) + "]"
     gists_string += colored.red(stringfiles) + '\n'
 
+    # Prepare the Footer
     gists_string += colored.cyan('-' * int(columns)) + "\n"
     return gists_string
 
 
-def format_configure(data):
-    return "File '~/.gistsrc' overrided!"
-
-
 def __format_error(data):
+    """ Print the string output error. """
     return colored.red("Error: ") + data
 
 
 def __format_file(file_gist):
+    """ Formats the output for a GistFile object.
+
+    :param gist: :class: `GistFile <GistFile>` instance.
+    """
+
+    # Calculate the number of columns of the current terminal window
     rows, columns = os.popen('stty size', 'r').read().split()
-    gist_string = ""
-    gist_string += colored.cyan('-' * int(columns)) + "\n"
+
+    # Prepare the Header
+    gist_string = colored.cyan('-' * int(columns)) + "\n"
     gist_string += colored.cyan("File [" + file_gist.filename + "]\n")
     gist_string += colored.cyan('-' * int(columns)) + "\n"
+
+    # Format Gist data
     gist_string += (colored.green("Language:") + " " +
             colored.red(file_gist.language) + "\n")
     gist_string += (colored.green("Size:") + " " +
@@ -136,5 +222,8 @@ def __format_file(file_gist):
             colored.red(file_gist.raw_url + "\n"))
     gist_string += (colored.green("Content:\n\n")
             + file_gist.content + "\n\n")
+
+    # Prepare the Footer
     gist_string += colored.cyan('-' * int(columns)) + "\n"
+
     return gist_string

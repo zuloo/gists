@@ -18,11 +18,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+"""
+
+gists.model
+~~~~~~~~~~~
+
+Model defines the two classes that extend of builtin python 'dicts'. They represent
+a Gist object and a Gist File. Used to make the code of other modules clearer.
+
+
+"""
+
 class Gist(dict):
-    """ Simple Gist object. """
+    """ :class: `Gist <Gist>` Simple Gist object. """
 
     def __init__(self, parsed_gist={}):
         """ Initialize gist object variables. """
+
         super(Gist, self).__init__(parsed_gist)
 
     @property
@@ -83,6 +95,7 @@ class Gist(dict):
 
 
 class GistFile(dict):
+    """ :class: `GistFile <GistFile>` File that belongs to a Gist. """
 
     def __init__(self, parsed_file={}):
         super(GistFile, self).__init__(parsed_file)
