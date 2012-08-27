@@ -34,7 +34,7 @@ import urllib2
 import os
 import literals
 import base64
-from ConfigParser import ConfigParser
+import ConfigParser
 
 
 class Result(object):
