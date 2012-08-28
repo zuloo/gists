@@ -8,7 +8,7 @@ setup(
         version='0.1',
         author='Jaume Devesa',
         author_email='jaumedevesa@gmail.com',
-        url='http://github.com/jdevesa/gists',
+        url='http://jdevesa.github.com/gists',
         description='CLI interface for manage Github gists',
         install_requires=['requests', 'clint'],
         scripts=['gists/gists'],
