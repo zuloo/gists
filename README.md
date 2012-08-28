@@ -1,3 +1,5 @@
+<!-- language-all: bash -->
+
 Gists
 =====
 
@@ -31,6 +33,11 @@ as well).
 Use it!
 -------
 
+### SetUp credentials ###
+
+Gists uses the file '~/.gistsrc' to obtain your GitHub user and password. First thing you need to do is set up your
+credentials to 
+
 ### List of Gists ###
 
 Return a list of gists. Basic usage is:
@@ -39,8 +46,36 @@ Return a list of gists. Basic usage is:
 
 That will return a list of Gists from the configured user in your (~/.gistsrc) file. 
 
-More:
+More arguments:
 
-* __-u__ argument you specifies from which user you want to retrieve his/her gists.
-* __--private__ argument retrieves the private gists of the user besides the public ones. (Needs authentication)
-* __-s__ argument overrides the password from the (~/.gistsrc) file
+* __-u__ (--user) argument you specifies from which user you want to retrieve his/her gists.
+* __-p__ (--private) argument retrieves the private gists of the user besides the public ones. (Needs authentication)
+* __-s__ (--secret) argument overrides the password from the (~/.gistsrc) file
+
+### Show a Gist ###
+
+Shows a Gist. There are two modes here: without the __-f__ argument, that will show the Gist metadata (url, description, name of the files...) and with the __-f__ argument, that specifically returns the content of one of the files of the Gist. Identifier of the Gist, (obtained via `gists list`) is mandatory as first argument.
+
+Example without __-f__ argument:
+
+    $ gists show 834ab572ab62064af23c
+
+Example with __-f__ argument:
+
+    $ gists show 834ab572ab62064af23c -f examplegist.py
+
+### Download a Gist ###
+
+Download a file from a Gist using the 'get' action. While in the 'show' action the parameter __-f__ is optional depending on the kind of data you want to show, here is mandatory. So, a basic usage is:
+
+    $ gists get 834ab572ab62064af23c -f examplegist.py
+
+The name of the target file in your OS will be the same of the argument provided by __-f__. There is no way to change this.
+
+More arguments:
+
+* __-o__ (--output\_dir) destination directory where you want to save the gist
+
+
+
+
