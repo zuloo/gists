@@ -1,6 +1,6 @@
 from setuptools import setup
 
-README = open('README.md').read()
+README = open('README').read()
 
 setup(
         name='gists',
