@@ -42,6 +42,8 @@ credentials to perform actions that needs authentication. Method is just:
 
     $ gists credentials -u your_github_user -s your_github_password
 
+<!-- language: lang-none -->
+
 You can perform this actions many times you wish to override the values.
 
 
@@ -54,6 +56,8 @@ Return a list of gists. Basic usage is:
 <!-- language: bash -->
 
     $ gists list
+
+<!-- language: lang-none -->
 
 This will return a list of Gists from field __user__ from [credentials] section in your (~/.gistsrc) file. 
 
@@ -71,13 +75,19 @@ Shows the detail of a Gist. There are two modes here: without the __-f__ argumen
 
 Example without __-f__ argument:
 
-`$ gists show 834ab572ab62064af23c`
+<!-- language:bash -->
+
+    $ gists show 834ab572ab62064af23c
+
+<!-- language: lang-none -->
 
 Example with __-f__ argument:
 
 <!-- language: bash -->
 
     $ gists show 834ab572ab62064af23c -f examplegist.py
+
+<!-- language: lang-none -->
 
 
 ### Download a Gist ###
@@ -101,6 +111,8 @@ Creates a Gist. Needs a file to be uploaded. So, authentication and __-f__ argum
 
     $ gists create -f file_to_upload.py
 
+<!-- language: lang-none -->
+
 The name of the file in the OS will be the same of the name of the file in the Gist. No way to change this.
 
 #### More arguments ####
@@ -120,25 +132,41 @@ Update an existent Gist. Several examples:
 
 To modify the description, use the __-d__ (--description) argument:
 
+<!-- language: bash -->
+
     $ gists update 834ab572ab62064af23c -d "New gist description"
+
+<!-- language: lang-none -->
 
 #### Modify the contents of a file ####
 
 Modify the contents of a File that already exists in the Gist:
 
+<!-- language: bash -->
+
     $ gists update 834ab572ab62064af23c -f updated_file_content.py
+
+<!-- language: lang-none -->
 
 #### Add a new file to a Gist ####
 
 Modify a Gist adding a new file, using the __-n__ (--new) argument:
 
+<!-- language: bash -->
+
     $ gists update 834ab572ab62064af23c -f new_file_to_gist.py -n
+
+<!-- language: lang-none -->
 
 #### Remove a file from a Gist ####
 
 Modify a Gist removing one of its files, using the __-r__ (--remove) argument:
 
+<!-- language: bash -->
+
     $ gists update 834ab572ab62064af23c -f no_longer_needed_file.py -r
+
+<!-- language: lang-none -->
 
 #### More arguments ####
 
