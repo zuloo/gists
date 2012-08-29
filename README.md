@@ -77,7 +77,7 @@ Example without __-f__ argument:
 
 <!-- language:bash -->
 
-    $ gists show 834ab572ab62064af23c
+    $ gists show e110cc498a31dc442fc3
 
 <!-- language: lang-none -->
 
@@ -85,7 +85,7 @@ Example with __-f__ argument:
 
 <!-- language: bash -->
 
-    $ gists show 834ab572ab62064af23c -f examplegist.py
+    $ gists show e110cc498a31dc442fc3 -f examplegist.txt
 
 <!-- language: lang-none -->
 
@@ -94,7 +94,11 @@ Example with __-f__ argument:
 
 Download a file from a Gist using the 'get' action. While in the 'show' action the parameter __-f__ is optional depending on the kind of data you want to show, here is mandatory. So, a basic usage is:
 
-    $ gists get 834ab572ab62064af23c -f examplegist.py
+<!-- language: bash -->
+
+    $ gists get e110cc498a31dc442fc3 -f examplegist.txt
+
+<!-- language: lang-none -->
 
 The name of the target file in your OS will be the same of the argument provided by __-f__. There is no way to change this.
 
@@ -109,7 +113,7 @@ Creates a Gist. Needs a file to be uploaded. So, authentication and __-f__ argum
 
 <!-- language: bash -->
 
-    $ gists create -f file_to_upload.py
+    $ gists create -f examplegist.txt
 
 <!-- language: lang-none -->
 
@@ -134,7 +138,7 @@ To modify the description, use the __-d__ (--description) argument:
 
 <!-- language: bash -->
 
-    $ gists update 834ab572ab62064af23c -d "New gist description"
+    $ gists update e110cc498a31dc442fc3 -d "New gist description"
 
 <!-- language: lang-none -->
 
@@ -144,7 +148,7 @@ Modify the contents of a File that already exists in the Gist:
 
 <!-- language: bash -->
 
-    $ gists update 834ab572ab62064af23c -f updated_file_content.py
+    $ gists update e110cc498a31dc442fc3 -f examplegist.txt
 
 <!-- language: lang-none -->
 
@@ -154,7 +158,7 @@ Modify a Gist adding a new file, using the __-n__ (--new) argument:
 
 <!-- language: bash -->
 
-    $ gists update 834ab572ab62064af23c -f new_file_to_gist.py -n
+    $ gists update e110cc498a31dc442fc3 -f new_file_to_gist.py -n
 
 <!-- language: lang-none -->
 
@@ -164,7 +168,7 @@ Modify a Gist removing one of its files, using the __-r__ (--remove) argument:
 
 <!-- language: bash -->
 
-    $ gists update 834ab572ab62064af23c -f no_longer_needed_file.py -r
+    $ gists update e110cc498a31dc442fc3 -f no_longer_needed_file.py -r
 
 <!-- language: lang-none -->
 

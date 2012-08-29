@@ -175,7 +175,8 @@ def __format_gist(gist):
 
     # Format Gist data
     gists_string += colored.green('Description:\t')
-    gists_string += gist.description + '\n'
+    if gist.description:
+        gists_string += gist.description + '\n'
     gists_string += colored.green('Url:\t\t')
     gists_string += gist.url + '\n'
     gists_string += colored.green('Html Url:\t')

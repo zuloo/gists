@@ -23,6 +23,7 @@
 # Github API response, and handles errors and responses.
 
 from utils import GithubFacade, download, build_result, GistsConfigurer
+from clint.textui import colored
 import literals
 import model
 
@@ -166,7 +167,7 @@ def show(gist_id, requested_file, facade=GithubFacade()):
     return result
 
 
-def post(username, password, public, upload_file, description,
+def post(username, password, public, upload_file, source_file, description,
         facade=GithubFacade()):
     """ Create a new Gist.
 
@@ -188,7 +189,7 @@ def post(username, password, public, upload_file, description,
     # Prepare the content reading the file
     gistFile = model.GistFile()
     gistFile.filename = upload_file
-    with open(upload_file, 'r') as f:
+    with open(source_file, 'r') as f:
         file_content = f.read()
         gistFile.content = file_content
 
@@ -199,16 +200,15 @@ def post(username, password, public, upload_file, description,
     gist.public = public
     gist.addFile(gistFile)
 
-    print "Uploading gist....\n",
+    print "Uploading gist... ",
     response = facade.create_gist(gist, username, password)
     # Parse the response
     if response.ok:
-        print "\nDone!"
+        print colored.green("Done!")
         gist = model.Gist(response.json)
         result = build_result(True, model.Gist(response.json))
     else:
-        print "\nFail!"
-        print response.status_code
+        print colored.red("Fail!")
         if response.json:
             result = build_result(False, response.json['message'])
         else:

@@ -143,7 +143,8 @@ def handle_post(args):
     else:
         source_file = None
 
-    return username, password, public, source_file, args.description
+    return (username, password, public, args.filename,
+        source_file, args.description)
 
 
 def handle_show(args):
