@@ -9,7 +9,7 @@ Install it
 Two ways of installation:
 
 * [Download](https://github.com/jdevesa/gists/zipball/master) the source code, extract it, and execute `python setup.py install`
-* pip install gists (not yet!)
+* `pip install gists` (not yet!)
 
 Configure it
 ------------
@@ -71,9 +71,7 @@ Shows the detail of a Gist. There are two modes here: without the __-f__ argumen
 
 Example without __-f__ argument:
 
-<!-- language: bash -->
-
-    $ gists show 834ab572ab62064af23c
+`$ gists show 834ab572ab62064af23c`
 
 Example with __-f__ argument:
 
