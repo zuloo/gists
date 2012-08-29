@@ -3,16 +3,16 @@ Gists
 
 CLI interface for managing GitHub gists
 
-Install
--------
+Install it
+----------
 
 Two ways of installation:
 
 * [Download](https://github.com/jdevesa/gists/zipball/master) the source code, extract it, and execute `python setup.py install`
 * pip install gists (not yet!)
 
-Configure
----------
+Configure it
+------------
 
 First time you run 'gists', execute the command
 
@@ -32,36 +32,41 @@ Use it!
 -------
 
 
-### SetUp credentials ###
+### Set up credentials ###
 
 Gists uses the file '~/.gistsrc' to obtain your GitHub user and password. First thing you need to do is set up your
 credentials to perform actions that needs authentication. Method is just:
 
 <!-- language: bash -->
+
     $ gists credentials -u your_github_user -s your_github_password
 
-You can perform this actions many times you like to override the values.
+You can perform this actions many times you wish to override the values.
 
 
 ### List of Gists ###
 
+#### Basic Usage ####
+
 Return a list of gists. Basic usage is:
 
 <!-- language: bash -->
+
     $ gists list
 
-That will return a list of Gists from the configured user in your (~/.gistsrc) file. 
+This will return a list of Gists from field __user__ from [credentials] section in your (~/.gistsrc) file. 
 
-More arguments:
+#### More arguments: ####
 
-* __-u__ (--user) argument you specifies from which user you want to retrieve his/her gists.
-* __-p__ (--private) argument retrieves the private gists of the user besides the public ones. (Needs authentication)
-* __-s__ (--secret) argument overrides the password from the (~/.gistsrc) file.
+* __-u__ (--user) specifies from whom user you want to retrieve his/her gists.
+* __-p__ (--private) retrieves the private gists from the user besides the public ones. (Needs authentication)
+* __-s__ (--secret) overrides the password from the (~/.gistsrc) file.
 
 
 ### Show a Gist ###
 
-Shows a Gist. There are two modes here: without the __-f__ argument, that will show the Gist metadata (url, description, name of the files...) and with the __-f__ argument, that specifically returns the content of one of the files of the Gist. Identifier of the Gist, (obtained via `gists list`) is mandatory as first argument.
+
+Shows the detail of a Gist. There are two modes here: without the __-f__ argument, that will show the Gist metadata (url, description, name of the files...) and with the __-f__ argument, that shows the content of one of the files of the Gist. Identifier of the Gist, (obtained via `gists list`) is mandatory as first argument.
 
 Example without __-f__ argument:
 
@@ -80,7 +85,7 @@ Download a file from a Gist using the 'get' action. While in the 'show' action t
 
 The name of the target file in your OS will be the same of the argument provided by __-f__. There is no way to change this.
 
-More arguments:
+#### More arguments ####
 
 * __-o__ (--output\_dir) destination directory where you want to save the gist
 
@@ -93,7 +98,7 @@ Creates a Gist. Needs a file to be uploaded. So, authentication and __-f__ argum
 
 The name of the file in the OS will be the same of the name of the file in the Gist. No way to change this.
 
-More arguments:
+#### More arguments ####
 
 * __-u__ (--user) Overrides the default user specified in ~/.gistsrc file. This will be the owner of the Gist. If you specify this argument you might need to use the __-s__ as well.
 * __-s__ (--secret) Overrides the default password specified in ~/.gistsrc file.
@@ -131,7 +136,6 @@ Modify a Gist removing one of its files, using the __-r__ (--remove) argument:
     $ gists update 834ab572ab62064af23c -f no_longer_needed_file.py -r
 
 #### More arguments ####
-
 
 * __-u__ (--user) Overrides the default user specified in ~/.gistsrc file. This will be the owner of the Gist. If you specify this argument you might need to use the __-s__ as well.
 * __-s__ (--secret) Overrides the default password specified in ~/.gistsrc file.
