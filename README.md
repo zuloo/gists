@@ -16,6 +16,7 @@ Configure it
 
 First time you run 'gists', execute the command
 
+<!-- language: bash -->
 
     $ gists credentials -u your_github_user -s your_github_password
 
@@ -70,9 +71,13 @@ Shows the detail of a Gist. There are two modes here: without the __-f__ argumen
 
 Example without __-f__ argument:
 
+<!-- language: bash -->
+
     $ gists show 834ab572ab62064af23c
 
 Example with __-f__ argument:
+
+<!-- language: bash -->
 
     $ gists show 834ab572ab62064af23c -f examplegist.py
 
@@ -93,6 +98,8 @@ The name of the target file in your OS will be the same of the argument provided
 ### Create a Gist ###
 
 Creates a Gist. Needs a file to be uploaded. So, authentication and __-f__ arguments are required. Basic usage is:
+
+<!-- language: bash -->
 
     $ gists create -f file_to_upload.py
 
