@@ -9,7 +9,7 @@ Install it
 Two ways of installation:
 
 * [Download](https://github.com/jdevesa/gists/zipball/master) the source code, extract it, and execute `python setup.py install`
-* `pip install gists` (not yet!)
+* `pip install gists
 
 Configure it
 ------------
