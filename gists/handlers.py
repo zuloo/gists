@@ -54,24 +54,32 @@ def handle_list(args):
 
     # If '--private' option, password becomes mandatory. Load it. """
     if args.private:
-        token = config.getConfigToken()
-        if not token:
-            print literals.AUTH_TOKEN_NOT_FOUND
-            sys.exit()
+        # Get the 'secret' argument if exists, otherwise take it from
+        # configuration file. If 'secret' can not be loaded, raise an exception
+        if args.secret:
+            credential = args.secret
+        else:
+            credential = config.getConfigToken()
+            if not credential:
+                print literals.CREDENTIAL_NOT_FOUND
+                sys.exit()
     else:
-        token = None
+        credential = None
 
-    return username, token
+    return username, utils.GithubFacade(args.user, credential)
 
 
 def handle_update(args):
     """ Handle the arguments to call the 'update gist' functionality. """
 
-    # get the authentication token from the configuration file
-    # If it can not be loaded, raise an exception
-    token = config.getConfigToken()
-    if not token:
-        print literals.AUTH_TOKEN_NOT_FOUND
+    # Get the 'secret' argument if exists, otherwise take it from configuration
+    # file. If 'secret' can not be loaded, raise an exception
+    if args.secret:
+        credential = args.secret
+    else:
+        credential = config.getConfigToken()
+    if not credential:
+        print literals.CREDENTIAL_NOT_FOUND
         sys.exit()
 
     # Define the source file
@@ -83,18 +91,22 @@ def handle_update(args):
     else:
         source_file = None
 
-    return (args.gist_id, token, args.description, args.filename,
-        source_file, args.new, args.remove)
+    return (args.gist_id,  args.description, args.filename,
+        source_file, args.new, args.remove,
+        utils.GithubFacade(args.user, credential))
 
 
 def handle_post(args):
     """ Handle the arguments to call the 'create gist' functionality. """
 
-    # get the authentication token from the configuration file
-    # If it can not be loaded, raise an exception
-    token = config.getConfigToken()
-    if not token:
-        print literals.AUTH_TOKEN_NOT_FOUND
+    # Get the 'secret' argument if exists, otherwise take it from configuration
+    # file. If 'secret' can not be loaded, raise an exception
+    if args.secret:
+        credential = args.secret
+    else:
+        credential = config.getConfigToken()
+    if not credential:
+        print literals.CREDENTIAL_NOT_FOUND
         sys.exit()
 
     # Define public or private
@@ -112,34 +124,35 @@ def handle_post(args):
     else:
         source_file = None
 
-    return (token, public, args.filename, source_file, args.description)
+    return (public, args.filename, source_file, args.description,
+        utils.GithubFacade(args.user, credential))
 
 
 def handle_show(args):
     """ Handle the arguments to call the 'show' gists functionality. """
-
-    return args.gist_id, args.filename
+    return args.gist_id, args.filename, utils.GithubFacade()
 
 
 def handle_get(args):
     """ Handle the arguments to call the 'get' gists functionality. """
-
-    return args.gist_id, args.filename, args.output_dir
+    return args.gist_id, args.filename, args.output_dir, utils.GithubFacade()
 
 
 def handle_delete(args):
     """ Handle the arguments to call the 'delete' gists functionality. """
-
-    # get the authentication token from the configuration file
-    # If it can not be loaded, raise an exception
-    token = config.getConfigToken()
-    if not token:
-        print literals.AUTH_TOKEN_NOT_FOUND
+    # Get the 'secret' argument if exists, otherwise take it from configuration
+    # file. If 'secret' can not be loaded, raise an exception
+    if args.secret:
+        credential = args.secret
+    else:
+        credential = config.getConfigToken()
+    if not credential:
+        print literals.CREDENTIAL_NOT_FOUND
         sys.exit()
 
-    return args.gist_id, token
+    return args.gist_id, utils.GithubFacade(args.user, credential)
 
 
 def handle_authorize(args):
     """ Handle the arguments to call the 'authorize' gists functionality. """
-    return args.user, args.secret
+    return (utils.GithubFacade(args.user, args.secret),)

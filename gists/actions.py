@@ -22,7 +22,7 @@
 # of the available actions, call the GithubFacade to retrieve the
 # Github API response, and handles errors and responses.
 
-from utils import GithubFacade, download, build_result, GistsConfigurer
+from utils import download, build_result, GistsConfigurer
 from clint.textui import colored
 import literals
 import model
@@ -39,14 +39,14 @@ module, call to GitHub Gists API and manage the response.
 """
 
 
-def list_gists(username, token, facade=GithubFacade()):
+def list_gists(username, facade):
     """ Retrieve the list of gists for a concrete user.
 
     :param token: GitHub authentication token
     :param facade: instance of the object that actually performs the request
     """
 
-    response = facade.request_list_of_gists(username, token)
+    response = facade.request_list_of_gists(username)
 
     if response.ok:
         # List of gists for the requested user found.
@@ -61,7 +61,7 @@ def list_gists(username, token, facade=GithubFacade()):
                 response.json['message'])
 
 
-def get(gist_id, requested_file, destination_dir, facade=GithubFacade()):
+def get(gist_id, requested_file, destination_dir, facade):
     """ Download a gist file.
 
     Gists can have several files. This method searches for and downloads
@@ -122,7 +122,7 @@ def get(gist_id, requested_file, destination_dir, facade=GithubFacade()):
     return result
 
 
-def show(gist_id, requested_file, facade=GithubFacade()):
+def show(gist_id, requested_file, facade):
     """ Retrieve a single gist.
 
     If the 'requested_file' is None, then it will show the
@@ -166,8 +166,7 @@ def show(gist_id, requested_file, facade=GithubFacade()):
     return result
 
 
-def post(token, public, upload_file, source_file, description,
-        facade=GithubFacade()):
+def post(public, upload_file, source_file, description, facade):
     """ Create a new Gist.
 
     Currently only support create Gist with single files. (Then you can
@@ -177,7 +176,6 @@ def post(token, public, upload_file, source_file, description,
     You are able to specify if you want to create a public or private
     gist and set its description.
 
-    :param token: GitHub authentication token
     :param public: whenever new Gist should be public or private
     :param upload_file: input file to upload
     :param description: brief description of the Gist
@@ -199,7 +197,7 @@ def post(token, public, upload_file, source_file, description,
     gist.addFile(gistFile)
 
     print "Uploading gist... ",
-    response = facade.create_gist(gist, token)
+    response = facade.create_gist(gist)
     # Parse the response
     if response.ok:
         print colored.green("Done!")
@@ -214,11 +212,10 @@ def post(token, public, upload_file, source_file, description,
     return result
 
 
-def delete(gistid, token, facade=GithubFacade()):
+def delete(gistid, facade):
     """ Just deletes a gist.
 
     :param gistid: identifier of the Gist to delete
-    :param token: GitHub authentication token
     :param facade: instance of the object that actually performs the request
     """
 
@@ -234,7 +231,7 @@ def delete(gistid, token, facade=GithubFacade()):
         if value.lower() in accepted_values_for_yes:
 
             # Perform the deletion
-            response = facade.delete_gist(gistid, token)
+            response = facade.delete_gist(gistid)
             if response.ok:
                 result = build_result(True, literals.DELETE_OK, gistid)
 
@@ -252,12 +249,10 @@ def delete(gistid, token, facade=GithubFacade()):
     return result
 
 
-def update(gistid, token, description, filename,
-        filepath, new, remove, facade=GithubFacade()):
+def update(gistid, description, filename, filepath, new, remove, facade):
     """ Updates a gist.
 
     :param gistid: identifier of the Gist to update
-    :param token: GitHub authentication token
     :param description: new description of the Gist. If 'None' it won't be
     updated
     :param filename: name of the file to modify its contents
@@ -314,7 +309,7 @@ def update(gistid, token, description, filename,
                 gist.setFile(filename, file_obj)
 
     # prepare the request
-    response = facade.update_gist(gist, token)
+    response = facade.update_gist(gist)
     if response.ok:
         return build_result(True, gist)
     else:
@@ -324,19 +319,22 @@ def update(gistid, token, description, filename,
     return result
 
 
-def authorize(username, password, facade=GithubFacade()):
+def authorize(facade):
     """ Configure the user and password of the GitHub user.
 
-    :param username: new configuration GitHub user name
-    :param password: new configuration GitHub user password
+    :param facade: The Github interface
     """
 
     # check if there is already an authorization for the app
-    response = facade.list_authorizations(username, password)
+    response = facade.list_authorizations()
     if response.ok:
         for auth in response.json:
             authorization = model.Authorization(auth)
             if authorization.note == literals.APP_NAME:
+                # write the token to the configuration file
+                configurer = GistsConfigurer()
+                configurer.setConfigUser(facade.username)
+                configurer.setConfigToken(authorization.token)
                 return build_result(True, authorization)
     else:
         return build_result(False, literals.AUTHORIZE_NOK,
@@ -348,7 +346,7 @@ def authorize(username, password, facade=GithubFacade()):
     auth.note_url = literals.APP_URL
     auth.scopes = ["gist"]
 
-    response = facade.authorize(auth, username, password)
+    response = facade.authorize(auth)
 
     if response.ok:
         auth = model.Authorization(response.json)
@@ -356,7 +354,7 @@ def authorize(username, password, facade=GithubFacade()):
 
         # write the token to the configuration file
         configurer = GistsConfigurer()
-        configurer.setConfigUser(username)
+        configurer.setConfigUser(facade.username)
         configurer.setConfigToken(auth.token)
     else:
         result = build_result(False, literals.AUTHORIZE_NOK,

@@ -85,6 +85,9 @@ def __add_list_parser(subparsers):
     parser_list.add_argument("-u", "--user",
             help="""Github user. Overrides the default 'user' property
             in configuration file""")
+    parser_list.add_argument("-s", "--secret",
+            help="""Github password. Overrides the default 'token' property
+            in configuration file""")
     parser_list.add_argument("-p", "--private",
             help="""Return the private gists besides the public ones.
             Password needed (by arguments or in configuration file)""",
@@ -141,6 +144,12 @@ def __add_create_parser(subparsers):
     # Add the subparser to handle the 'create' action
     parser_post = subparsers.add_parser("create",
             help="Create a new gist")
+    parser_post.add_argument("-u", "--user",
+            help="""Github user. Overrides the default 'user' property
+            in configuration file""")
+    parser_post.add_argument("-s", "--secret",
+            help="""Github password. Overrides the default 'token' property
+            in configuration file""")
     parser_post.add_argument("-f", "--filename",
             help="Specify gist file to upload.", required=True)
     parser_post.add_argument("-p", "--private",
@@ -165,6 +174,12 @@ def __add_update_parser(subparsers):
             help="Update a gist")
     parser_update.add_argument("gist_id",
             help="Identifier of the gist to update")
+    parser_update.add_argument("-u", "--user",
+            help="""Github user. Overrides the default 'user' property
+            in configuration file""")
+    parser_update.add_argument("-s", "--secret",
+            help="""Github password. Overrides the default 'token' property
+            in configuration file""")
     group1 = parser_update.add_argument_group("File options",
             "Update Gist files")
     group1.add_argument("-f", "--filename",
@@ -196,6 +211,12 @@ def __add_delete_parser(subparsers):
     parser_delete = subparsers.add_parser("delete", help="Delete a gist")
     parser_delete.add_argument("gist_id",
             help="Identifier of the Gist to delete")
+    parser_delete.add_argument("-u", "--user",
+            help="""Github user. Overrides the default 'user' property
+            in configuration file""")
+    parser_delete.add_argument("-s", "--secret",
+            help="""Github password. Overrides the default 'token' property
+            in configuration file""")
     parser_delete.set_defaults(handle_args=handle_delete, func=delete,
             formatter=format_delete)
 

@@ -61,20 +61,34 @@ class GithubFacade(object):
     # Default content type
     APPLICATION_JSON = "application/json"
 
-    def request_list_of_gists(self, username, token=None):
+    def __init__(self, username=None, credential=None):
+        """ Initializes the Github facade.
+
+        param: username The username used to connect to the API. Can
+                be None if using the token based authentication.
+        param: credential The password (if username provided) or the
+                token to be used to authenticate.
+        """
+        self.username = username
+        self.credential = credential
+        self.basic_auth = (username is not None)
+
+    def request_list_of_gists(self, username):
         """ Call to get a list of gists for user.
 
         :param token: Github authentication token
         """
-
-        params = {}
-
         # Set the URL
         url = self.ENDPOINT_LIST % (username)
-        if token:
-            # Set the authentication header only if the password is set
-            params = {'access_token': token}
-        return requests.get(url, params=params)
+
+        if self.basic_auth and self.credential:
+            return requests.get(url, auth=(self.username, self.credential))
+        else:
+            params = {}
+            if self.credential:
+                # Set the authentication header only if the password is set
+                params = {'access_token': self.credential}
+            return requests.get(url, params=params)
 
     def request_gist(self, id_gist):
         """ Request a single Gist info.
@@ -86,81 +100,73 @@ class GithubFacade(object):
         url = self.ENDPOINT_GIST % (id_gist)
         return requests.get(url)
 
-    def create_gist(self, payload, token):
+    def create_gist(self, payload):
         """ Create a new gist.
 
         :param payload: the data of the message body. It contains description,
             whenever is public or private and, of course, file contents.
-        :param token: GitHub authentication token
         """
 
-        # Add needed headers
-        headers = {'Content-type': self.APPLICATION_JSON}
-        params = {'access_token': token}
-
-        # Set the URL
         url = self.ENDPOINT_CREATE
-
-        # transform data into json
+        headers = {'Content-type': self.APPLICATION_JSON}
         data_json = json.dumps(payload, indent=2)
 
-        # Send the request
-        return requests.post(url, data=data_json, headers=headers,
-                params=params)
+        if self.basic_auth:
+            return requests.post(url, data=data_json, headers=headers,
+                    auth=(self.username, self.credential))
+        else:
+            params = {'access_token': self.credential}
+            return requests.post(url, data=data_json, headers=headers,
+                    params=params)
 
-    def update_gist(self, payload, token):
+    def update_gist(self, payload):
         """ Update an existent Gist via PATCH method.
 
         :param payload: the data of the message body. It contains description,
             whenever is public or private and, of course, file contents.
-        :param token: GitHub authentication token
         """
 
-        # Add needed headers
-        headers = {'Content-type': self.APPLICATION_JSON}
-        params = {'access_token': token}
-
-        # Set the URL
         url = self.ENDPOINT_GIST % (payload.identifier)
-
-        # transform data into json
+        headers = {'Content-type': self.APPLICATION_JSON}
         data_json = json.dumps(payload, indent=2)
 
-        # Send the request
-        return requests.patch(url, data=data_json, headers=headers,
-                params=params)
+        if self.basic_auth:
+            return requests.patch(url, data=data_json, headers=headers,
+                    auth=(self.username, self.credential))
+        else:
+            params = {'access_token': self.credential}
+            return requests.patch(url, data=data_json, headers=headers,
+                    params=params)
 
-    def delete_gist(self, id_gist, token):
+    def delete_gist(self, id_gist):
         """ Delete an existent Gist.
 
         :param id_gist: identifier of the Gist to delete
-        :param token: GitHub authentication token
         """
         url = self.ENDPOINT_GIST % (id_gist)
-        params = {'access_token': token}
-        return requests.delete(url, params=params)
+        if self.basic_auth:
+            return requests.delete(url,
+                    auth=(self.username, self.credential))
+        else:
+            params = {'access_token': self.credential}
+            return requests.delete(url, params=params)
 
-    def list_authorizations(self, username, password):
-        """ List the authorizations for the given user.
+    def list_authorizations(self):
+        """ List the authorizations for the given user. """
+        return requests.get(self.ENDPOINT_AUTH,
+                auth=(self.username, self.credential))
 
-        :param username The Github username
-        :param password The Github password
-        """
-        return requests.get(self.ENDPOINT_AUTH, auth=(username, password))
-
-    def authorize(self, payload, username, password):
+    def authorize(self, payload):
         """ Authorize the current app.
 
         :param payload The data of the message body. It contains the
             authorization request information.
-        :param username Github user name
-        :param password Github user password
         """
         url = self.ENDPOINT_AUTH
         headers = {'Content-type': self.APPLICATION_JSON}
         data_json = json.dumps(payload, indent=2)
         return requests.post(url, data=data_json, headers=headers,
-                auth=(username, password))
+                auth=(self.username, self.credential))
 
 
 class GistsConfigurer(object):

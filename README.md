@@ -40,6 +40,9 @@ credentials to perform actions that needs authentication. Method is just:
 
 You can perform this actions many times you wish to override the values.
 
+If you don't want to authorize the app, you can always use the **-u** and **-s** parameters to provide the
+credentials in each command.
+
 
 ### List of Gists ###
 

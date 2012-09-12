@@ -72,7 +72,7 @@ DOWNLOADING = "Downloading: %s\nTo: %s\nBytes: %s"
 USER_NOT_FOUND = ("Can not load GitHub user name neither from '--user (-u)' "
     "parameter nor from the configuration file. ")
 
-AUTH_TOKEN_NOT_FOUND = ("Authentication token not found "
-    "in the configuration file.")
+CREDENTIAL_NOT_FOUND = ("Credential should be informed via configuration "
+    "file or '-s' argument")
 
 AUTHORIZE_NOK = "Could not get an authorization token. Github reason: '%s'"
