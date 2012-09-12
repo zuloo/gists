@@ -27,6 +27,10 @@ All the return literals here.
 
 """
 
+APP_NAME = "Gists CLI"
+
+APP_URL = "https://github.com/jdevesa/gists"
+
 LISTS_ERROR = "Can not return the list of gists. Github reason: '%s'"
 
 DOWNLOAD_OK = "File '%s' downloaded successfully!"

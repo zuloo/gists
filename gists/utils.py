@@ -140,6 +140,14 @@ class GithubFacade(object):
         params = {'access_token': token}
         return requests.delete(url, params=params)
 
+    def list_authorizations(self, username, password):
+        """ List the authorizations for the given user.
+
+        :param username The Github username
+        :param password The Github password
+        """
+        return requests.get(self.ENDPOINT_AUTH, auth=(username, password))
+
     def authorize(self, payload, username, password):
         """ Authorize the current app.
 

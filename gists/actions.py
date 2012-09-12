@@ -331,10 +331,21 @@ def authorize(username, password, facade=GithubFacade()):
     :param password: new configuration GitHub user password
     """
 
+    # check if there is already an authorization for the app
+    response = facade.list_authorizations(username, password)
+    if response.ok:
+        for auth in response.json:
+            authorization = model.Authorization(auth)
+            if authorization.note == literals.APP_NAME:
+                return build_result(True, authorization)
+    else:
+        return build_result(False, literals.AUTHORIZE_NOK,
+                response.json['message'])
+
     # build the authorization request
     auth = model.Authorization()
-    auth.note = "Gists CLI"
-    auth.note_url = "https://github.com/jdevesa/gists"
+    auth.note = literals.APP_NAME
+    auth.note_url = literals.APP_URL
     auth.scopes = ["gist"]
 
     response = facade.authorize(auth, username, password)
