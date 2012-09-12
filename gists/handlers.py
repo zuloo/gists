@@ -54,42 +54,24 @@ def handle_list(args):
 
     # If '--private' option, password becomes mandatory. Load it. """
     if args.private:
-        # Get it from argument line
-        if args.secret:
-            password = args.secret
-        else:
-            password = config.getConfigPassword()
-        # Check if we have actually a password
-        if not password:
-            print literals.PASSWORD_NOT_FOUND
+        token = config.getConfigToken()
+        if not token:
+            print literals.AUTH_TOKEN_NOT_FOUND
             sys.exit()
     else:
-        password = None
+        token = None
 
-    return username, password
+    return username, token
 
 
 def handle_update(args):
     """ Handle the arguments to call the 'update gist' functionality. """
 
-    # Get the 'user' argument if exists, otherwise take it from configuration
-    # file. If 'user' can not be loaded, raise an exception
-    if args.user:
-        username = args.user
-    else:
-        username = config.getConfigUser()
-    if not username:
-        print literals.USER_NOT_FOUND
-        sys.exit()
-
-    # Get the 'secret' argument if exists, otherwise take it from configuration
-    # file. If 'secret' can not be loaded, raise an exception
-    if args.secret:
-        password = args.secret
-    else:
-        password = config.getConfigPassword()
-    if not password:
-        print literals.PASSWORD_NOT_FOUND
+    # get the authentication token from the configuration file
+    # If it can not be loaded, raise an exception
+    token = config.getConfigToken()
+    if not token:
+        print literals.AUTH_TOKEN_NOT_FOUND
         sys.exit()
 
     # Define the source file
@@ -101,31 +83,18 @@ def handle_update(args):
     else:
         source_file = None
 
-    return (args.gist_id, username, password, args.description,
-            args.filename, source_file, args.new, args.remove)
+    return (args.gist_id, token, args.description, args.filename,
+        source_file, args.new, args.remove)
 
 
 def handle_post(args):
     """ Handle the arguments to call the 'create gist' functionality. """
 
-    # Get the 'user' argument if exists, otherwise take it from configuration
-    # file. If 'user' can not be loaded, raise an exception
-    if args.user:
-        username = args.user
-    else:
-        username = config.getConfigUser()
-    if not username:
-        print literals.USER_NOT_FOUND
-        sys.exit()
-
-    # Get the 'secret' argument if exists, otherwise take it from configuration
-    # file. If 'secret' can not be loaded, raise an exception
-    if args.secret:
-        password = args.secret
-    else:
-        password = config.getConfigPassword()
-    if not password:
-        print literals.PASSWORD_NOT_FOUND
+    # get the authentication token from the configuration file
+    # If it can not be loaded, raise an exception
+    token = config.getConfigToken()
+    if not token:
+        print literals.AUTH_TOKEN_NOT_FOUND
         sys.exit()
 
     # Define public or private
@@ -143,8 +112,7 @@ def handle_post(args):
     else:
         source_file = None
 
-    return (username, password, public, args.filename,
-        source_file, args.description)
+    return (token, public, args.filename, source_file, args.description)
 
 
 def handle_show(args):
@@ -162,28 +130,16 @@ def handle_get(args):
 def handle_delete(args):
     """ Handle the arguments to call the 'delete' gists functionality. """
 
-    # Get the 'user' argument if exists, otherwise take it from configuration
-    # file. If 'user' can not be loaded, raise an exception
-    if args.user:
-        username = args.user
-    else:
-        username = config.getConfigUser()
-    if not username:
-        print literals.USER_NOT_FOUND
+    # get the authentication token from the configuration file
+    # If it can not be loaded, raise an exception
+    token = config.getConfigToken()
+    if not token:
+        print literals.AUTH_TOKEN_NOT_FOUND
         sys.exit()
 
-    # Get the 'secret' argument if exists, otherwise take it from configuration
-    # file. If 'secret' can not be loaded, raise an exception
-    if args.secret:
-        password = args.secret
-    else:
-        password = config.getConfigPassword()
-    if not password:
-        print literals.PASSWORD_NOT_FOUND
-
-    return args.gist_id, username, password
+    return args.gist_id, token
 
 
-def handle_configure(args):
-    """ Handle the arguments to call the 'configure' gists functionality. """
+def handle_authorize(args):
+    """ Handle the arguments to call the 'authorize' gists functionality. """
     return args.user, args.secret

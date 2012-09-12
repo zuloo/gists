@@ -33,7 +33,6 @@ import requests
 import urllib2
 import os
 import literals
-import base64
 import ConfigParser
 
 
@@ -57,25 +56,25 @@ class GithubFacade(object):
     ENDPOINT_LIST = "https://api.github.com/users/%s/gists"
     ENDPOINT_GIST = "https://api.github.com/gists/%s"
     ENDPOINT_CREATE = "https://api.github.com/gists"
+    ENDPOINT_AUTH = "https://api.github.com/authorizations"
 
     # Default content type
     APPLICATION_JSON = "application/json"
 
-    def request_list_of_gists(self, username, password=None):
+    def request_list_of_gists(self, username, token=None):
         """ Call to get a list of gists for user.
 
-        :param username: GitHub user name
-        :param password: GitHub user password
+        :param token: Github authentication token
         """
 
-        headers = {}
+        params = {}
 
         # Set the URL
         url = self.ENDPOINT_LIST % (username)
-        if password:
+        if token:
             # Set the authentication header only if the password is set
-            headers = encode_auth_header(username, password)
-        return requests.get(url, headers=headers)
+            params = {'access_token': token}
+        return requests.get(url, params=params)
 
     def request_gist(self, id_gist):
         """ Request a single Gist info.
@@ -87,18 +86,17 @@ class GithubFacade(object):
         url = self.ENDPOINT_GIST % (id_gist)
         return requests.get(url)
 
-    def create_gist(self, payload, username, password):
+    def create_gist(self, payload, token):
         """ Create a new gist.
 
         :param payload: the data of the message body. It contains description,
             whenever is public or private and, of course, file contents.
-        :param username: GitHub user name
-        :param password: GitHub user password
+        :param token: GitHub authentication token
         """
 
         # Add needed headers
-        headers = encode_auth_header(username, password)
-        headers['Content-type'] = self.APPLICATION_JSON
+        headers = {'Content-type': self.APPLICATION_JSON}
+        params = {'access_token': token}
 
         # Set the URL
         url = self.ENDPOINT_CREATE
@@ -107,20 +105,20 @@ class GithubFacade(object):
         data_json = json.dumps(payload, indent=2)
 
         # Send the request
-        return requests.post(url, data=data_json, headers=headers)
+        return requests.post(url, data=data_json, headers=headers,
+                params=params)
 
-    def update_gist(self, payload, username, password):
+    def update_gist(self, payload, token):
         """ Update an existent Gist via PATCH method.
 
         :param payload: the data of the message body. It contains description,
             whenever is public or private and, of course, file contents.
-        :param username: GitHub user name
-        :param password: GitHub user password
+        :param token: GitHub authentication token
         """
 
         # Add needed headers
-        headers = encode_auth_header(username, password)
-        headers['Content-type'] = self.APPLICATION_JSON
+        headers = {'Content-type': self.APPLICATION_JSON}
+        params = {'access_token': token}
 
         # Set the URL
         url = self.ENDPOINT_GIST % (payload.identifier)
@@ -129,34 +127,32 @@ class GithubFacade(object):
         data_json = json.dumps(payload, indent=2)
 
         # Send the request
-        return requests.patch(url, data=data_json, headers=headers)
+        return requests.patch(url, data=data_json, headers=headers,
+                params=params)
 
-    def delete_gist(self, id_gist, username, password):
+    def delete_gist(self, id_gist, token):
         """ Delete an existent Gist.
 
         :param id_gist: identifier of the Gist to delete
-        :param username: GitHub user name
-        :param password: GitHub user password
+        :param token: GitHub authentication token
         """
         url = self.ENDPOINT_GIST % (id_gist)
-        headers = encode_auth_header(username, password)
-        return requests.delete(url, headers=headers)
+        params = {'access_token': token}
+        return requests.delete(url, params=params)
 
+    def authorize(self, payload, username, password):
+        """ Authorize the current app.
 
-def encode_auth_header(username, password):
-    """ Return the encoded user and password.
-
-    Prepares the "authorization" HTTP header using b64encoding.
-    :param username: GitHub user name
-    :param password: GitHub user password
-    """
-
-    # Here because is needed in all commands, and it is a way to don't
-    # import b64encode function everywhere.
-    headers = {}
-    encoded_authentication_string = base64.b64encode(username + ":" + password)
-    headers["Authorization"] = "Basic " + encoded_authentication_string
-    return headers
+        :param payload The data of the message body. It contains the
+            authorization request information.
+        :param username Github user name
+        :param password Github user password
+        """
+        url = self.ENDPOINT_AUTH
+        headers = {'Content-type': self.APPLICATION_JSON}
+        data_json = json.dumps(payload, indent=2)
+        return requests.post(url, data=data_json, headers=headers,
+                auth=(username, password))
 
 
 class GistsConfigurer(object):
@@ -202,24 +198,25 @@ class GistsConfigurer(object):
         with open(self.config_file_path, 'w') as f:
             self.config.write(f)
 
-    def getConfigPassword(self):
-        """ Loads the password from configuration instance.
+    def getConfigToken(self):
+        """ Returns the auth token from the configuration file.
 
-        If configuration instance can not load the password returns None
+        If configuration instance con not load 'credentials' section,
+        or user is not configured, it returns none.
         """
 
         if not self.config.has_section('credentials'):
             print literals.CONFIG_FILE_NOT_FOUND
             return None
-        password = self.config.get('credentials', 'password')
-        return password
+        username = self.config.get('credentials', 'token')
+        return username
 
-    def setConfigPassword(self, password):
-        """ Sets the password in the configuration file. """
+    def setConfigToken(self, token):
+        """ Sets the auth token into the configuration file. """
 
         if not self.config.has_section('credentials'):
             self.config.add_section('credentials')
-        self.config.set('credentials', 'password', password)
+        self.config.set('credentials', 'token', token)
         with open(self.config_file_path, 'w') as f:
             self.config.write(f)
 

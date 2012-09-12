@@ -131,3 +131,62 @@ class GistFile(dict):
     @property
     def size(self):
         return self['size']
+
+
+class Authorization(dict):
+    """ :class: `Authorization <Authorization>` authorization object. """
+
+    def __init__(self, parsed_auth={}):
+        super(Authorization, self).__init__(parsed_auth)
+
+    @property
+    def id(self):
+        return self['id']
+
+    @property
+    def url(self):
+        return self['url']
+
+    @property
+    def app(self):
+        return self['app']['name']
+
+    @property
+    def app_url(self):
+        return self['app']['url']
+
+    @property
+    def created(self):
+        return self['created_at']
+
+    @property
+    def updated(self):
+        return self['updated_at']
+
+    @property
+    def token(self):
+        return self['token']
+
+    @property
+    def note(self):
+        return self['note']
+
+    @note.setter
+    def note(self, note):
+        self['note'] = note
+
+    @property
+    def note_url(self):
+        return self['note_url']
+
+    @note_url.setter
+    def note_url(self, note_url):
+        self['note_url'] = note_url
+
+    @property
+    def scopes(self):
+        return self['scopes']
+
+    @scopes.setter
+    def scopes(self, scopes):
+        self['scopes'] = scopes
