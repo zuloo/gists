@@ -27,6 +27,10 @@ All the return literals here.
 
 """
 
+APP_NAME = "Gists CLI"
+
+APP_URL = "https://github.com/jdevesa/gists"
+
 LISTS_ERROR = "Can not return the list of gists. Github reason: '%s'"
 
 DOWNLOAD_OK = "File '%s' downloaded successfully!"
@@ -68,5 +72,7 @@ DOWNLOADING = "Downloading: %s\nTo: %s\nBytes: %s"
 USER_NOT_FOUND = ("Can not load GitHub user name neither from '--user (-u)' "
     "parameter nor from the configuration file. ")
 
-PASSWORD_NOT_FOUND = ("Password should be informed via configuration file or "
-    "'-s' argument")
+CREDENTIAL_NOT_FOUND = ("Credential should be informed via configuration "
+    "file or '-s' argument")
+
+AUTHORIZE_NOK = "Could not get an authorization token. Github reason: '%s'"

@@ -5,11 +5,11 @@ README = open('README').read()
 setup(
         name='gists',
         packages=['gists'],
-        version='0.1',
+        version='0.1.1',
         author='Jaume Devesa',
         author_email='jaumedevesa@gmail.com',
         url='http://jdevesa.github.com/gists',
-        description='CLI interface for manage Github gists',
+        description='CLI interface to manage Github gists',
         install_requires=['requests', 'clint'],
         scripts=['gists/gists'],
         include_package_data=True,

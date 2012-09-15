@@ -30,11 +30,11 @@ and coordinates the 'handlers'->'actions'->'formatters' execution workflow
 """
 
 import argparse
-from actions import list_gists, show, get, post, delete, update, configure
-from handlers import handle_list, handle_show, handle_update, handle_configure
+from actions import list_gists, show, get, post, delete, update, authorize
+from handlers import handle_list, handle_show, handle_update, handle_authorize
 from handlers import handle_get, handle_post, handle_delete
 from formatters import format_list, format_post, format_update
-from formatters import format_get, format_show, format_delete, format_configure
+from formatters import format_get, format_show, format_delete, format_authorize
 
 
 def run(*args, **kwargs):
@@ -54,7 +54,7 @@ def run(*args, **kwargs):
     __add_create_parser(subparsers)
     __add_update_parser(subparsers)
     __add_delete_parser(subparsers)
-    __add_configure_parser(subparsers)
+    __add_authorize_parser(subparsers)
 
     # Parse the arguments
     args = parser.parse_args()
@@ -86,7 +86,7 @@ def __add_list_parser(subparsers):
             help="""Github user. Overrides the default 'user' property
             in configuration file""")
     parser_list.add_argument("-s", "--secret",
-            help="""Github password. Overrides the default 'secret' property
+            help="""Github password. Overrides the default 'token' property
             in configuration file""")
     parser_list.add_argument("-p", "--private",
             help="""Return the private gists besides the public ones.
@@ -144,14 +144,14 @@ def __add_create_parser(subparsers):
     # Add the subparser to handle the 'create' action
     parser_post = subparsers.add_parser("create",
             help="Create a new gist")
-    parser_post.add_argument("-f", "--filename",
-            help="Specify gist file to upload.", required=True)
     parser_post.add_argument("-u", "--user",
             help="""Github user. Overrides the default 'user' property
             in configuration file""")
     parser_post.add_argument("-s", "--secret",
-            help="""Github password. Overrides the default 'secret' property
+            help="""Github password. Overrides the default 'token' property
             in configuration file""")
+    parser_post.add_argument("-f", "--filename",
+            help="Specify gist file to upload.", required=True)
     parser_post.add_argument("-p", "--private",
             help="""Private gist. (public by default)""",
             action="store_true")
@@ -178,7 +178,7 @@ def __add_update_parser(subparsers):
             help="""Github user. Overrides the default 'user' property
             in configuration file""")
     parser_update.add_argument("-s", "--secret",
-            help="""Github password. Overrides the default 'secret' property
+            help="""Github password. Overrides the default 'token' property
             in configuration file""")
     group1 = parser_update.add_argument_group("File options",
             "Update Gist files")
@@ -215,26 +215,26 @@ def __add_delete_parser(subparsers):
             help="""Github user. Overrides the default 'user' property
             in configuration file""")
     parser_delete.add_argument("-s", "--secret",
-            help="""Github password. Overrides the default 'secret' property
+            help="""Github password. Overrides the default 'token' property
             in configuration file""")
     parser_delete.set_defaults(handle_args=handle_delete, func=delete,
             formatter=format_delete)
 
 
-def __add_configure_parser(subparsers):
-    """ Define the subparser to handle the 'configure' functionality.
+def __add_authorize_parser(subparsers):
+    """ Define the subparser to handle the 'authorize' functionality.
 
     :param subparsers: the subparser entity
     """
 
-    # Add the subparser to handle the 'configure' action.
-    parser_configure = subparsers.add_parser("credentials",
-            help="Configure your 'gists' module")
-    parser_configure.add_argument("-u", "--user",
-            help="""Configure your GitHub user in your ~/.gistsrc file. """,
+    # Add the subparser to handle the 'authorize' action.
+    parser_authorize = subparsers.add_parser("authorize",
+            help="Authorize the 'gists' module")
+    parser_authorize.add_argument("-u", "--user",
+            help="""Your GitHub user used to generate the auth token. """,
             required=True)
-    parser_configure.add_argument("-s", "--secret",
-            help="""Configure your Github password in your ~/.gistsrc file.""",
+    parser_authorize.add_argument("-s", "--secret",
+            help="""Your Github password used to generate the auth token.""",
             required=True)
-    parser_configure.set_defaults(handle_args=handle_configure, func=configure,
-            formatter=format_configure)
+    parser_authorize.set_defaults(handle_args=handle_authorize, func=authorize,
+            formatter=format_authorize)

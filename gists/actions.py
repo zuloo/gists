@@ -22,7 +22,7 @@
 # of the available actions, call the GithubFacade to retrieve the
 # Github API response, and handles errors and responses.
 
-from utils import GithubFacade, download, build_result, GistsConfigurer
+from utils import download, build_result, GistsConfigurer
 from clint.textui import colored
 import literals
 import model
@@ -39,15 +39,14 @@ module, call to GitHub Gists API and manage the response.
 """
 
 
-def list_gists(username, password, facade=GithubFacade()):
+def list_gists(username, facade):
     """ Retrieve the list of gists for a concrete user.
 
-    :param username: GitHub user name
-    :param password: GitHub user password
+    :param token: GitHub authentication token
     :param facade: instance of the object that actually performs the request
     """
 
-    response = facade.request_list_of_gists(username, password)
+    response = facade.request_list_of_gists(username)
 
     if response.ok:
         # List of gists for the requested user found.
@@ -62,7 +61,7 @@ def list_gists(username, password, facade=GithubFacade()):
                 response.json['message'])
 
 
-def get(gist_id, requested_file, destination_dir, facade=GithubFacade()):
+def get(gist_id, requested_file, destination_dir, facade):
     """ Download a gist file.
 
     Gists can have several files. This method searches for and downloads
@@ -123,7 +122,7 @@ def get(gist_id, requested_file, destination_dir, facade=GithubFacade()):
     return result
 
 
-def show(gist_id, requested_file, facade=GithubFacade()):
+def show(gist_id, requested_file, facade):
     """ Retrieve a single gist.
 
     If the 'requested_file' is None, then it will show the
@@ -167,8 +166,7 @@ def show(gist_id, requested_file, facade=GithubFacade()):
     return result
 
 
-def post(username, password, public, upload_file, source_file, description,
-        facade=GithubFacade()):
+def post(public, upload_file, source_file, description, facade):
     """ Create a new Gist.
 
     Currently only support create Gist with single files. (Then you can
@@ -178,8 +176,6 @@ def post(username, password, public, upload_file, source_file, description,
     You are able to specify if you want to create a public or private
     gist and set its description.
 
-    :param username: GitHub user name
-    :param password: GitHub user password
     :param public: whenever new Gist should be public or private
     :param upload_file: input file to upload
     :param description: brief description of the Gist
@@ -201,7 +197,7 @@ def post(username, password, public, upload_file, source_file, description,
     gist.addFile(gistFile)
 
     print "Uploading gist... ",
-    response = facade.create_gist(gist, username, password)
+    response = facade.create_gist(gist)
     # Parse the response
     if response.ok:
         print colored.green("Done!")
@@ -216,12 +212,10 @@ def post(username, password, public, upload_file, source_file, description,
     return result
 
 
-def delete(gistid, username, password, facade=GithubFacade()):
+def delete(gistid, facade):
     """ Just deletes a gist.
 
     :param gistid: identifier of the Gist to delete
-    :param username: GitHub user name
-    :param password: GitHub user password
     :param facade: instance of the object that actually performs the request
     """
 
@@ -237,7 +231,7 @@ def delete(gistid, username, password, facade=GithubFacade()):
         if value.lower() in accepted_values_for_yes:
 
             # Perform the deletion
-            response = facade.delete_gist(gistid, username, password)
+            response = facade.delete_gist(gistid)
             if response.ok:
                 result = build_result(True, literals.DELETE_OK, gistid)
 
@@ -255,13 +249,10 @@ def delete(gistid, username, password, facade=GithubFacade()):
     return result
 
 
-def update(gistid, username, password, description, filename,
-        filepath, new, remove, facade=GithubFacade()):
+def update(gistid, description, filename, filepath, new, remove, facade):
     """ Updates a gist.
 
     :param gistid: identifier of the Gist to update
-    :param username: GitHub user name
-    :param password: GitHub user password
     :param description: new description of the Gist. If 'None' it won't be
     updated
     :param filename: name of the file to modify its contents
@@ -318,7 +309,7 @@ def update(gistid, username, password, description, filename,
                 gist.setFile(filename, file_obj)
 
     # prepare the request
-    response = facade.update_gist(gist, username, password)
+    response = facade.update_gist(gist)
     if response.ok:
         return build_result(True, gist)
     else:
@@ -328,14 +319,45 @@ def update(gistid, username, password, description, filename,
     return result
 
 
-def configure(username, password):
+def authorize(facade):
     """ Configure the user and password of the GitHub user.
 
-    :param username: new configuration GitHub user name
-    :param password: new configuration GitHub user password
+    :param facade: The Github interface
     """
 
-    configurer = GistsConfigurer()
-    configurer.setConfigUser(username)
-    configurer.setConfigPassword(password)
-    return
+    # check if there is already an authorization for the app
+    response = facade.list_authorizations()
+    if response.ok:
+        for auth in response.json:
+            authorization = model.Authorization(auth)
+            if authorization.note == literals.APP_NAME:
+                # write the token to the configuration file
+                configurer = GistsConfigurer()
+                configurer.setConfigUser(facade.username)
+                configurer.setConfigToken(authorization.token)
+                return build_result(True, authorization)
+    else:
+        return build_result(False, literals.AUTHORIZE_NOK,
+                response.json['message'])
+
+    # build the authorization request
+    auth = model.Authorization()
+    auth.note = literals.APP_NAME
+    auth.note_url = literals.APP_URL
+    auth.scopes = ["gist"]
+
+    response = facade.authorize(auth)
+
+    if response.ok:
+        auth = model.Authorization(response.json)
+        result = build_result(True, auth)
+
+        # write the token to the configuration file
+        configurer = GistsConfigurer()
+        configurer.setConfigUser(facade.username)
+        configurer.setConfigToken(auth.token)
+    else:
+        result = build_result(False, literals.AUTHORIZE_NOK,
+                response.json['message'])
+
+    return result

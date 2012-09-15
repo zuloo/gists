@@ -18,33 +18,30 @@ First time you run 'gists', execute the command
 
 <!-- language: bash -->
 
-    $ gists credentials -u your_github_user -s your_github_password
+    $ gists authorize -u your_github_user -s your_github_password
 
 
 And the file ~/.gistsrc (which stores the 'gists' configuration) will be written
-with your GitHub username and its password.
-
-You can live without this config file using the '-u (--user)' argument every
-time you perform an action, and '-s (--secret)' argument every time you perform an 
-action that needs authentication (create, update, delete gists, and view private gists
-as well).
+with your GitHub api authentication token.
 
 Use it!
 -------
 
-
 ### Set up credentials ###
 
-Gists uses the file '~/.gistsrc' to obtain your GitHub user and password. First thing you need to do is set up your
+Gists uses the file '~/.gistsrc' to obtain your GitHub authentication token. First thing you need to do is set up your
 credentials to perform actions that needs authentication. Method is just:
 
 <!-- language: bash -->
 
-    $ gists credentials -u your_github_user -s your_github_password
+    $ gists authorize -u your_github_user -s your_github_password
 
 <!-- language: lang-none -->
 
 You can perform this actions many times you wish to override the values.
+
+If you don't want to authorize the app, you can always use the **-u** and **-s** parameters to provide the
+credentials in each command.
 
 
 ### List of Gists ###
@@ -65,7 +62,6 @@ This will return a list of Gists from field __user__ from [credentials] section 
 
 * __-u__ (--user) specifies from whom user you want to retrieve his/her gists.
 * __-p__ (--private) retrieves the private gists from the user besides the public ones. (Needs authentication)
-* __-s__ (--secret) overrides the password from the (~/.gistsrc) file.
 
 
 ### Show a Gist ###
@@ -121,8 +117,6 @@ The name of the file in the OS will be the same of the name of the file in the G
 
 #### More arguments ####
 
-* __-u__ (--user) Overrides the default user specified in ~/.gistsrc file. This will be the owner of the Gist. If you specify this argument you might need to use the __-s__ as well.
-* __-s__ (--secret) Overrides the default password specified in ~/.gistsrc file.
 * __-p__ (--private) whenever you want the Gist to be private.
 * __-d__ (--description) Set the description of the Gist.
 * __-i__ (--input\_dir) Specify the input directory where the file is.
@@ -174,6 +168,4 @@ Modify a Gist removing one of its files, using the __-r__ (--remove) argument:
 
 #### More arguments ####
 
-* __-u__ (--user) Overrides the default user specified in ~/.gistsrc file. This will be the owner of the Gist. If you specify this argument you might need to use the __-s__ as well.
-* __-s__ (--secret) Overrides the default password specified in ~/.gistsrc file.
 * __-i__ (--input\_dir) Specify the input directory where the file is.

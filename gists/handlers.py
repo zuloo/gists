@@ -54,42 +54,32 @@ def handle_list(args):
 
     # If '--private' option, password becomes mandatory. Load it. """
     if args.private:
-        # Get it from argument line
+        # Get the 'secret' argument if exists, otherwise take it from
+        # configuration file. If 'secret' can not be loaded, raise an exception
         if args.secret:
-            password = args.secret
+            credential = args.secret
         else:
-            password = config.getConfigPassword()
-        # Check if we have actually a password
-        if not password:
-            print literals.PASSWORD_NOT_FOUND
-            sys.exit()
+            credential = config.getConfigToken()
+            if not credential:
+                print literals.CREDENTIAL_NOT_FOUND
+                sys.exit()
     else:
-        password = None
+        credential = None
 
-    return username, password
+    return username, utils.GithubFacade(args.user, credential)
 
 
 def handle_update(args):
     """ Handle the arguments to call the 'update gist' functionality. """
 
-    # Get the 'user' argument if exists, otherwise take it from configuration
-    # file. If 'user' can not be loaded, raise an exception
-    if args.user:
-        username = args.user
-    else:
-        username = config.getConfigUser()
-    if not username:
-        print literals.USER_NOT_FOUND
-        sys.exit()
-
     # Get the 'secret' argument if exists, otherwise take it from configuration
     # file. If 'secret' can not be loaded, raise an exception
     if args.secret:
-        password = args.secret
+        credential = args.secret
     else:
-        password = config.getConfigPassword()
-    if not password:
-        print literals.PASSWORD_NOT_FOUND
+        credential = config.getConfigToken()
+    if not credential:
+        print literals.CREDENTIAL_NOT_FOUND
         sys.exit()
 
     # Define the source file
@@ -101,31 +91,22 @@ def handle_update(args):
     else:
         source_file = None
 
-    return (args.gist_id, username, password, args.description,
-            args.filename, source_file, args.new, args.remove)
+    return (args.gist_id,  args.description, args.filename,
+        source_file, args.new, args.remove,
+        utils.GithubFacade(args.user, credential))
 
 
 def handle_post(args):
     """ Handle the arguments to call the 'create gist' functionality. """
 
-    # Get the 'user' argument if exists, otherwise take it from configuration
-    # file. If 'user' can not be loaded, raise an exception
-    if args.user:
-        username = args.user
-    else:
-        username = config.getConfigUser()
-    if not username:
-        print literals.USER_NOT_FOUND
-        sys.exit()
-
     # Get the 'secret' argument if exists, otherwise take it from configuration
     # file. If 'secret' can not be loaded, raise an exception
     if args.secret:
-        password = args.secret
+        credential = args.secret
     else:
-        password = config.getConfigPassword()
-    if not password:
-        print literals.PASSWORD_NOT_FOUND
+        credential = config.getConfigToken()
+    if not credential:
+        print literals.CREDENTIAL_NOT_FOUND
         sys.exit()
 
     # Define public or private
@@ -143,47 +124,35 @@ def handle_post(args):
     else:
         source_file = None
 
-    return (username, password, public, args.filename,
-        source_file, args.description)
+    return (public, args.filename, source_file, args.description,
+        utils.GithubFacade(args.user, credential))
 
 
 def handle_show(args):
     """ Handle the arguments to call the 'show' gists functionality. """
-
-    return args.gist_id, args.filename
+    return args.gist_id, args.filename, utils.GithubFacade()
 
 
 def handle_get(args):
     """ Handle the arguments to call the 'get' gists functionality. """
-
-    return args.gist_id, args.filename, args.output_dir
+    return args.gist_id, args.filename, args.output_dir, utils.GithubFacade()
 
 
 def handle_delete(args):
     """ Handle the arguments to call the 'delete' gists functionality. """
-
-    # Get the 'user' argument if exists, otherwise take it from configuration
-    # file. If 'user' can not be loaded, raise an exception
-    if args.user:
-        username = args.user
-    else:
-        username = config.getConfigUser()
-    if not username:
-        print literals.USER_NOT_FOUND
-        sys.exit()
-
     # Get the 'secret' argument if exists, otherwise take it from configuration
     # file. If 'secret' can not be loaded, raise an exception
     if args.secret:
-        password = args.secret
+        credential = args.secret
     else:
-        password = config.getConfigPassword()
-    if not password:
-        print literals.PASSWORD_NOT_FOUND
+        credential = config.getConfigToken()
+    if not credential:
+        print literals.CREDENTIAL_NOT_FOUND
+        sys.exit()
 
-    return args.gist_id, username, password
+    return args.gist_id, utils.GithubFacade(args.user, credential)
 
 
-def handle_configure(args):
-    """ Handle the arguments to call the 'configure' gists functionality. """
-    return args.user, args.secret
+def handle_authorize(args):
+    """ Handle the arguments to call the 'authorize' gists functionality. """
+    return (utils.GithubFacade(args.user, args.secret),)

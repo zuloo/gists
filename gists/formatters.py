@@ -154,9 +154,13 @@ def format_list(result):
         return __format_error(result.data)
 
 
-def format_configure(data):
+def format_authorize(result):
     """ This is enough for this method. """
-    return "File '~/.gistsrc' overrided!"
+    if result.success:
+        return "Authentication token written in '~/.gistsrc'"
+    else:
+        # Format the error string message
+        return __format_error(result.data)
 
 
 def __format_gist(gist):
