@@ -64,9 +64,9 @@ class GithubFacade(object):
     def __init__(self, username=None, credential=None):
         """ Initializes the Github facade.
 
-        param: username The username used to connect to the API. Can
+        :param username: The username used to connect to the API. Can
                 be None if using the token based authentication.
-        param: credential The password (if username provided) or the
+        :param credential: The password (if username provided) or the
                 token to be used to authenticate.
         """
         self.username = username
@@ -159,7 +159,7 @@ class GithubFacade(object):
     def authorize(self, payload):
         """ Authorize the current app.
 
-        :param payload The data of the message body. It contains the
+        :param payload: The data of the message body. It contains the
             authorization request information.
         """
         url = self.ENDPOINT_AUTH
