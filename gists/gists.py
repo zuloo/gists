@@ -35,6 +35,7 @@ from handlers import handle_list, handle_show, handle_update, handle_authorize
 from handlers import handle_get, handle_post, handle_delete
 from formatters import format_list, format_post, format_update
 from formatters import format_get, format_show, format_delete, format_authorize
+from version import VERSION
 
 
 def run(*args, **kwargs):
@@ -55,6 +56,7 @@ def run(*args, **kwargs):
     __add_update_parser(subparsers)
     __add_delete_parser(subparsers)
     __add_authorize_parser(subparsers)
+    __add_version_parser(subparsers)
 
     # Parse the arguments
     args = parser.parse_args()
@@ -222,7 +224,7 @@ def __add_delete_parser(subparsers):
 
 
 def __add_authorize_parser(subparsers):
-    """ Define the subparser to handle the 'authorize' functionality.
+    """ Define the subparser to handle the 'authorize' functionallity.
 
     :param subparsers: the subparser entity
     """
@@ -238,3 +240,15 @@ def __add_authorize_parser(subparsers):
             required=True)
     parser_authorize.set_defaults(handle_args=handle_authorize, func=authorize,
             formatter=format_authorize)
+
+
+def __add_version_parser(subparsers):
+    """ Define the subparser to handle 'version' functionallity.
+
+    :param subparsers: the subparser entity
+    """
+
+    parser_version = subparsers.add_parser("version",
+            help="Print the version of the release")
+    parser_version.set_defaults(handle_args=lambda x: (None,),
+            func=lambda x: None, formatter=lambda x: VERSION)

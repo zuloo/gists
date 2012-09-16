@@ -1,11 +1,26 @@
+import os
 from setuptools import setup
 
 README = open('README').read()
 
+
+def get_version():
+    """ Copied from @nvie:
+
+    https://github.com/nvie/rq/blob/master/setup.py
+    I'm toooooo lazy ...
+    """
+    basedir = os.path.dirname(__file__)
+    with open(os.path.join(basedir, 'gists/version.py')) as f:
+        VERSION = None
+        exec(f.read())
+        return VERSION
+    raise RuntimeError('No version info found.')
+
 setup(
         name='gists',
         packages=['gists'],
-        version='0.2',
+        version=get_version(),
         author='Jaume Devesa',
         author_email='jaumedevesa@gmail.com',
         url='http://jdevesa.github.com/gists',
@@ -27,4 +42,4 @@ setup(
             "Natural Language :: English",
             "Operating System :: POSIX :: Linux"
             ]
-)
+        )
