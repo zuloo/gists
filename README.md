@@ -24,6 +24,8 @@ First time you run 'gists', execute the command
 And the file ~/.gistsrc (which stores the 'gists' configuration) will be written
 with your GitHub api authentication token.
 
+Anytime you can revoke your authentication token in your [applications page](https://github.com/settings/applications) on GitHub.
+
 Use it!
 -------
 
