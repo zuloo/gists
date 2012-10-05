@@ -82,17 +82,18 @@ def handle_update(args):
         print literals.CREDENTIAL_NOT_FOUND
         sys.exit()
 
-    # Define the source file
-    if args.filename:
+    # Define the source files
+    source_files = []
+    for fn in args.filenames:
         if args.input_dir:
-            source_file = os.path.join(args.input_dir, args.filename)
+            source_files.append(os.path.join(args.input_dir, fn))
         else:
-            source_file = os.path.join("./", args.filename)
-    else:
-        source_file = None
+            source_files.append(os.path.join("./", fn))
+    if not args.filenames:
+        source_files = None
 
-    return (args.gist_id,  args.description, args.filename,
-        source_file, args.new, args.remove,
+    return (args.gist_id,  args.description, args.filenames,
+        source_files, args.new, args.remove,
         utils.GithubFacade(args.user, credential))
 
 
@@ -115,16 +116,17 @@ def handle_post(args):
     else:
         public = True
 
-    # Define the source file
-    if args.filename:
+    # Define the source files
+    source_files = []
+    for fn in args.filenames:
         if args.input_dir:
-            source_file = os.path.join(args.input_dir, args.filename)
+            source_files.append(os.path.join(args.input_dir, fn))
         else:
-            source_file = os.path.join("./", args.filename)
-    else:
-        source_file = None
+            source_files.append(os.path.join("./", fn))
+    if not args.filenames:
+        source_files = None
 
-    return (public, args.filename, source_file, args.description,
+    return (public, args.filenames, source_files, args.description,
         utils.GithubFacade(args.user, credential))
 
 
