@@ -140,6 +140,7 @@ def handle_get(args):
 
 def handle_delete(args):
     """ Handle the arguments to call the 'delete' gists functionality. """
+
     # Get the 'secret' argument if exists, otherwise take it from configuration
     # file. If 'secret' can not be loaded, raise an exception
     if args.secret:
@@ -156,3 +157,19 @@ def handle_delete(args):
 def handle_authorize(args):
     """ Handle the arguments to call the 'authorize' gists functionality. """
     return (utils.GithubFacade(args.user, args.secret),)
+
+
+def handle_fork(args):
+    """ Handle the arguments to call the 'fork' gists functionality. """
+
+    # Get the 'secret' argument if exists, otherwise take it from configuration
+    # file. If 'secret' can not be loaded, raise an exception
+    if args.secret:
+        credential = args.secret
+    else:
+        credential = config.getConfigToken()
+    if not credential:
+        print literals.CREDENTIAL_NOT_FOUND
+        sys.exit()
+
+    return args.gist_id, utils.GithubFacade(args.user, credential)

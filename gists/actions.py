@@ -23,7 +23,6 @@
 # Github API response, and handles errors and responses.
 
 from utils import download, build_result, GistsConfigurer
-from clint.textui import colored
 import literals
 import model
 
@@ -196,15 +195,11 @@ def post(public, upload_file, source_file, description, facade):
     gist.public = public
     gist.addFile(gistFile)
 
-    print "Uploading gist... ",
     response = facade.create_gist(gist)
     # Parse the response
     if response.ok:
-        print colored.green("Done!")
-        gist = model.Gist(response.json)
         result = build_result(True, model.Gist(response.json))
     else:
-        print colored.red("Fail!")
         if response.json:
             result = build_result(False, response.json['message'])
         else:
@@ -360,4 +355,23 @@ def authorize(facade):
         result = build_result(False, literals.AUTHORIZE_NOK,
                 response.json['message'])
 
+    return result
+
+
+def fork(gist_id, facade):
+    """ Forks a gist.
+
+    :param gistid: identifier of the Gist to fork
+    :param facade: instance of the object that actually performs the request
+    """
+    response = facade.fork_gist(gist_id)
+
+    if response.ok:
+        result = build_result(True, model.Gist(response.json))
+    else:
+        if response.json:
+            result = build_result(False, literals.FORK_ERROR, gist_id,
+                    response.json['message'])
+        else:
+            result = build_result(False, literals.UNHANDLED_EXCEPTION)
     return result

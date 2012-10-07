@@ -31,8 +31,9 @@ and coordinates the 'handlers'->'actions'->'formatters' execution workflow
 
 import argparse
 from actions import list_gists, show, get, post, delete, update, authorize
+from actions import fork
 from handlers import handle_list, handle_show, handle_update, handle_authorize
-from handlers import handle_get, handle_post, handle_delete
+from handlers import handle_get, handle_post, handle_delete, handle_fork
 from formatters import format_list, format_post, format_update
 from formatters import format_get, format_show, format_delete, format_authorize
 from version import VERSION
@@ -57,6 +58,7 @@ def run(*args, **kwargs):
     __add_delete_parser(subparsers)
     __add_authorize_parser(subparsers)
     __add_version_parser(subparsers)
+    __add_fork_parser(subparsers)
 
     # Parse the arguments
     args = parser.parse_args()
@@ -252,3 +254,23 @@ def __add_version_parser(subparsers):
             help="Print the version of the release")
     parser_version.set_defaults(handle_args=lambda x: (None,),
             func=lambda x: None, formatter=lambda x: VERSION)
+
+
+def __add_fork_parser(subparsers):
+    """ Define the subparser to handle 'fork' functionallity.
+
+    :param subparsers: the subparser entity
+    """
+
+    parser_fork = subparsers.add_parser("fork",
+            help="Fork another users' gists")
+    parser_fork.add_argument("gist_id",
+            help="Identifier of the Gist to fork")
+    parser_fork.add_argument("-u", "--user",
+            help="""Github user. Overrides the default 'user' property
+            in configuration file""")
+    parser_fork.add_argument("-s", "--secret",
+            help="""Github password. Overrides the default 'token' property
+            in configuration file""")
+    parser_fork.set_defaults(handle_args=handle_fork, func=fork,
+            formatter=format_post)

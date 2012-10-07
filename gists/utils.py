@@ -57,6 +57,7 @@ class GithubFacade(object):
     ENDPOINT_GIST = "https://api.github.com/gists/%s"
     ENDPOINT_CREATE = "https://api.github.com/gists"
     ENDPOINT_AUTH = "https://api.github.com/authorizations"
+    ENDPOINT_FORK = "https://api.github.com/gists/%s/fork"
 
     # Default content type
     APPLICATION_JSON = "application/json"
@@ -143,6 +144,7 @@ class GithubFacade(object):
 
         :param id_gist: identifier of the Gist to delete
         """
+
         url = self.ENDPOINT_GIST % (id_gist)
         if self.basic_auth:
             return requests.delete(url,
@@ -153,8 +155,19 @@ class GithubFacade(object):
 
     def list_authorizations(self):
         """ List the authorizations for the given user. """
+
         return requests.get(self.ENDPOINT_AUTH,
                 auth=(self.username, self.credential))
+
+    def fork_gist(self, gist_id):
+        """ Requests to GitHub Gist API to fork a gist. """
+
+        url = self.ENDPOINT_FORK % (gist_id)
+        if self.basic_auth:
+            return requests.post(url, auth=(self.username, self.credential))
+        else:
+            params = {'access_token': self.credential}
+            return requests.post(url, params=params)
 
     def authorize(self, payload):
         """ Authorize the current app.

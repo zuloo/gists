@@ -76,3 +76,5 @@ CREDENTIAL_NOT_FOUND = ("Credential should be informed via configuration "
     "file or '-s' argument")
 
 AUTHORIZE_NOK = "Could not get an authorization token. Github reason: '%s'"
+
+FORK_ERROR = "Can not fork the gist '%s'. Github reason: '%s'"
