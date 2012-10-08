@@ -171,16 +171,18 @@ Modify a Gist removing one of its files, using the __-r__ (--remove) argument:
 
 #### Multiple files in the same gist ####
 
-The past examples of the files update can be applied to serveral files, like creation command:
+The past examples of the files update can be applied to serveral files, like creation command.
+In that case the parameters __-i__, __-n__ and __-r__ will be applied to all files from __-f__ parameter:
 
 <!-- language: bash -->
 
     $ gists update e110cc498a31dc442fc3 -f examplegist.txt examplegist2.txt
     $ gists update e110cc498a31dc442fc3 -f new_file_to_gist.py new_file_to_gist2.py -n
     $ gists update e110cc498a31dc442fc3 -f no_longer_needed_file.py no_longer_needed_file2.py -r
+    $ gists update e110cc498a31dc442fc3 -f new_file_to_gist.py new_file_to_gist2.py -n -i ../input_directory
 
 <!-- language: bash-none -->
 
 #### More arguments ####
 
-* __-i__ (--input\_dir) Specify the input directory where the file is.
+* __-i__ (--input\_dir) Specify the input directory where the files are.

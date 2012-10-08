@@ -193,7 +193,7 @@ def __add_update_parser(subparsers):
     group11.add_argument("-r", "--remove", action="store_true",
             help="Delete file for the gist. '-f' (--filename) argument needed",
             default=False)
-    group11.add_argument("-i", "--input_dir",
+    group1.add_argument("-i", "--input_dir",
             help="Input directory where the source file is")
     group2 = parser_update.add_argument_group('Metadata options',
             "Update Gist General Data")

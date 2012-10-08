@@ -30,7 +30,6 @@ data for the functions in 'actions' module.
 """
 
 import sys
-import os
 import utils
 import literals
 
@@ -82,18 +81,11 @@ def handle_update(args):
         print literals.CREDENTIAL_NOT_FOUND
         sys.exit()
 
-    # Define the source files
-    source_files = []
-    for fn in args.filenames:
-        if args.input_dir:
-            source_files.append(os.path.join(args.input_dir, fn))
-        else:
-            source_files.append(os.path.join("./", fn))
-    if not args.filenames:
-        source_files = None
+    if not args.input_dir:
+        args.input_dir = "./"
 
     return (args.gist_id,  args.description, args.filenames,
-        source_files, args.new, args.remove,
+        args.input_dir, args.new, args.remove,
         utils.GithubFacade(args.user, credential))
 
 
@@ -116,17 +108,10 @@ def handle_post(args):
     else:
         public = True
 
-    # Define the source files
-    source_files = []
-    for fn in args.filenames:
-        if args.input_dir:
-            source_files.append(os.path.join(args.input_dir, fn))
-        else:
-            source_files.append(os.path.join("./", fn))
-    if not args.filenames:
-        source_files = None
+    if not args.input_dir:
+        args.input_dit = "./"
 
-    return (public, args.filenames, source_files, args.description,
+    return (public, args.filenames, args.input_dir, args.description,
         utils.GithubFacade(args.user, credential))
 
 
