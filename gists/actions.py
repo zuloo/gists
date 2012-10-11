@@ -25,6 +25,7 @@
 from utils import download, build_result, GistsConfigurer
 import literals
 import model
+import os
 
 """
 
@@ -165,7 +166,7 @@ def show(gist_id, requested_file, facade):
     return result
 
 
-def post(public, upload_file, source_file, description, facade):
+def post(public, upload_files, filepath, description, facade):
     """ Create a new Gist.
 
     Currently only support create Gist with single files. (Then you can
@@ -176,24 +177,26 @@ def post(public, upload_file, source_file, description, facade):
     gist and set its description.
 
     :param public: whenever new Gist should be public or private
-    :param upload_file: input file to upload
+    :param upload_files: list with  input files to upload
+    :param filepath: input parameter path
     :param description: brief description of the Gist
     :param facade: instance of the object that actually performs the request
     """
-
-    # Prepare the content reading the file
-    gistFile = model.GistFile()
-    gistFile.filename = upload_file
-    with open(source_file, 'r') as f:
-        file_content = f.read()
-        gistFile.content = file_content
 
     # Prepare the Gist file object and set its description and 'public' value
     gist = model.Gist()
     if description:
         gist.description = description
     gist.public = public
-    gist.addFile(gistFile)
+
+    for upfile in upload_files:
+        # Prepare the content reading the file
+        gistFile = model.GistFile()
+        gistFile.filename = upfile
+        with open(os.path.join(filepath, upfile), 'r') as f:
+            file_content = f.read()
+            gistFile.content = file_content
+        gist.addFile(gistFile)
 
     response = facade.create_gist(gist)
     # Parse the response
@@ -244,13 +247,13 @@ def delete(gistid, facade):
     return result
 
 
-def update(gistid, description, filename, filepath, new, remove, facade):
+def update(gistid, description, filenames, filepath, new, remove, facade):
     """ Updates a gist.
 
     :param gistid: identifier of the Gist to update
     :param description: new description of the Gist. If 'None' it won't be
     updated
-    :param filename: name of the file to modify its contents
+    :param filenames: list with names of the files to modify its contents
     :param filepath: input parameter path
     :param new: whenever the file is new or already exists
     :param remove: if the file should be deleted instead of modified
@@ -272,36 +275,37 @@ def update(gistid, description, filename, filepath, new, remove, facade):
         # Update the description of a Gist if requested
         gist.description = description
 
-    if filename:
-        # File to update
-        file_obj = gist.getFile(filename)
-        if not file_obj:
-            if remove:
-                return build_result(False, literals.UPDATE_RM_NF)
-            if new:
-                # Upload a new file to gist
-                gistFile = model.GistFile()
-                gistFile.filename = filename
-                with open(filepath, 'r') as f:
-                    file_content = f.read()
-                    gistFile.content = file_content
-                gist.addFile(gistFile)
+    if filenames:
+        for filename in filenames:
+            # File to update
+            file_obj = gist.getFile(filename)
+            if not file_obj:
+                if remove:
+                    return build_result(False, literals.UPDATE_RM_NF)
+                if new:
+                    # Upload a new file to gist
+                    gistFile = model.GistFile()
+                    gistFile.filename = filename
+                    with open(os.path.join(filepath, filename), 'r') as f:
+                        file_content = f.read()
+                        gistFile.content = file_content
+                    gist.addFile(gistFile)
+                else:
+                    # File not found and option --new it does not exist
+                    return build_result(False, literals.UPDATE_NF)
             else:
-                # File not found and option --new it does not exist
-                return build_result(False, literals.UPDATE_NF)
-        else:
-            if new:
-                # File not found and option --new it does not exist
-                return build_result(False, literals.UPDATE_NEW_DUP)
-            if remove:
-                # Remove a file
-                gist.setFile(filename, "null")
-            else:
-                # Update the contents of the file
-                with open(filepath, 'r') as f:
-                    file_content = f.read()
-                    file_obj.content = file_content
-                gist.setFile(filename, file_obj)
+                if new:
+                    # File not found and option --new it does not exist
+                    return build_result(False, literals.UPDATE_NEW_DUP)
+                if remove:
+                    # Remove a file
+                    gist.setFile(filename, "null")
+                else:
+                    # Update the contents of the file
+                    with open(os.path.join(filepath, filename), 'r') as f:
+                        file_content = f.read()
+                        file_obj.content = file_content
+                    gist.setFile(filename, file_obj)
 
     # prepare the request
     response = facade.update_gist(gist)

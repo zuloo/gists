@@ -107,11 +107,12 @@ The name of the target file in your OS will be the same of the argument provided
 
 ### Create a Gist ###
 
-Creates a Gist. Needs a file to be uploaded. So, authentication and __-f__ arguments are required. Basic usage is:
+Creates a Gist. Needs a file or a list of files to be uploaded. So, authentication and __-f__ arguments are required. Basic usage is:
 
 <!-- language: bash -->
 
     $ gists create -f examplegist.txt
+    $ gists create -f examplegist.txt examplegist2.txt
 
 <!-- language: lang-none -->
 
@@ -168,6 +169,20 @@ Modify a Gist removing one of its files, using the __-r__ (--remove) argument:
 
 <!-- language: lang-none -->
 
+#### Multiple files in the same gist ####
+
+The past examples of the files update can be applied to serveral files, like creation command.
+In that case the parameters __-i__, __-n__ and __-r__ will be applied to all files from __-f__ parameter:
+
+<!-- language: bash -->
+
+    $ gists update e110cc498a31dc442fc3 -f examplegist.txt examplegist2.txt
+    $ gists update e110cc498a31dc442fc3 -f new_file_to_gist.py new_file_to_gist2.py -n
+    $ gists update e110cc498a31dc442fc3 -f no_longer_needed_file.py no_longer_needed_file2.py -r
+    $ gists update e110cc498a31dc442fc3 -f new_file_to_gist.py new_file_to_gist2.py -n -i ../input_directory
+
+<!-- language: bash-none -->
+
 #### More arguments ####
 
-* __-i__ (--input\_dir) Specify the input directory where the file is.
+* __-i__ (--input\_dir) Specify the input directory where the files are.

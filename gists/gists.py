@@ -154,7 +154,7 @@ def __add_create_parser(subparsers):
     parser_post.add_argument("-s", "--secret",
             help="""Github password. Overrides the default 'token' property
             in configuration file""")
-    parser_post.add_argument("-f", "--filename",
+    parser_post.add_argument("-f", "--filenames", nargs='+',
             help="Specify gist file to upload.", required=True)
     parser_post.add_argument("-p", "--private",
             help="""Private gist. (public by default)""",
@@ -186,7 +186,7 @@ def __add_update_parser(subparsers):
             in configuration file""")
     group1 = parser_update.add_argument_group("File options",
             "Update Gist files")
-    group1.add_argument("-f", "--filename",
+    group1.add_argument("-f", "--filenames", nargs='+',
              help="Gist file to update.")
     group11 = group1.add_mutually_exclusive_group()
     group11.add_argument("-n", "--new", action="store_true",
@@ -195,7 +195,7 @@ def __add_update_parser(subparsers):
     group11.add_argument("-r", "--remove", action="store_true",
             help="Delete file for the gist. '-f' (--filename) argument needed",
             default=False)
-    group11.add_argument("-i", "--input_dir",
+    group1.add_argument("-i", "--input_dir",
             help="Input directory where the source file is")
     group2 = parser_update.add_argument_group('Metadata options',
             "Update Gist General Data")
