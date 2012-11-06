@@ -186,3 +186,18 @@ In that case the parameters __-i__, __-n__ and __-r__ will be applied to all fil
 #### More arguments ####
 
 * __-i__ (--input\_dir) Specify the input directory where the files are.
+
+### Fork a Gist ###
+
+#### Basic Usage ####
+
+Fork another user's gist and create a new one where you are the owner
+
+<!-- language: bash -->
+
+    $ gists fork gist_id
+
+<!-- language: lang-none -->
+
+It will fork the gist. If the original gist is public, it will create a public gist. If it is private, it will
+create a private gist. There is no way to change that.

@@ -1,9 +1,8 @@
-0.3 (?)
+0.3 (2012/11/06)
 ----------------
 
-* Add 'fork' functionallity - (https://github.com/jdevesa/gists/commit/3b02b47e34fecccd6bfd0eb39987fb58ddab6aeb)
-* Create or update gist with multiple files at the same time - (?)
-* Toggle 'starred' gists functionallity (?)
+* Add 'fork' functionallity - (https://github.com/jdevesa/gists/commit/a0a68d771d36131c6c6dd720bd0046d291e5d33c)
+* Create or update gist with multiple files at the same time - (https://github.com/jdevesa/gists/commit/4813c2a1e58740d580ccec8c45a407a625f989b3)
 
 0.2 (2012/09/17)
 ----------------
