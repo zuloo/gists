@@ -39,14 +39,18 @@ module, call to GitHub Gists API and manage the response.
 """
 
 
-def list_gists(username, facade):
+def list_gists(username, facade, want_starred):
     """ Retrieve the list of gists for a concrete user.
 
     :param token: GitHub authentication token
     :param facade: instance of the object that actually performs the request
+    :param want_starred: if we want the starred ones
     """
 
-    response = facade.request_list_of_gists(username)
+    if not want_starred:
+        response = facade.request_list_of_gists(username)
+    else:
+        response = facade.request_list_starred_gists(username)
 
     if response.ok:
         # List of gists for the requested user found.
@@ -379,3 +383,22 @@ def fork(gist_id, facade):
         else:
             result = build_result(False, literals.UNHANDLED_EXCEPTION)
     return result
+
+
+def star(gist_id, facade):
+    """ Stars a gist.
+
+    :param gistid: identifier of the Gist to fork
+    :param facade: instance of the object that actually performs the request
+    """
+    response = facade.star_gist(gist_id)
+
+    if response.ok:
+        result = build_result(True, literals.STAR_OK, gist_id)
+
+    else:
+        print response.status_code
+        print response.headers
+        print response.content
+        res_message = response.json['message']
+        return build_result(False, literals.STAR_NOK, res_message)

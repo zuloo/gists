@@ -141,7 +141,7 @@ def format_list(result):
             stringfiles = " [" + ", ".join(gist_names) + "]"
             gists_string += colored.red(stringfiles)
             if not gist.public:
-                gists_string += " (Private) "
+                gists_string += " (Private Gist) "
             gists_string += '\n'
 
         # Set the footer
@@ -158,6 +158,20 @@ def format_authorize(result):
     """ This is enough for this method. """
     if result.success:
         return "Authentication token written in '~/.gistsrc'"
+    else:
+        # Format the error string message
+        return __format_error(result.data)
+
+
+def format_star(result):
+    """ Formats the output of the 'star' action.
+
+    :param result: Result instance
+    """
+
+    if result.success:
+        # The result is just a string informing the success
+        return result.data
     else:
         # Format the error string message
         return __format_error(result.data)

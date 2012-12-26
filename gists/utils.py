@@ -54,10 +54,12 @@ class GithubFacade(object):
     """
     # Endpoints to gists' github API
     ENDPOINT_LIST = "https://api.github.com/users/%s/gists"
+    ENDPOINT_STARRED = "https://api.github.com/gists/starred"
     ENDPOINT_GIST = "https://api.github.com/gists/%s"
     ENDPOINT_CREATE = "https://api.github.com/gists"
     ENDPOINT_AUTH = "https://api.github.com/authorizations"
     ENDPOINT_FORK = "https://api.github.com/gists/%s/fork"
+    ENDPOINT_STAR = "https://api.github.com/gists/%s/star"
 
     # Default content type
     APPLICATION_JSON = "application/json"
@@ -77,10 +79,25 @@ class GithubFacade(object):
     def request_list_of_gists(self, username):
         """ Call to get a list of gists for user.
 
-        :param token: Github authentication token
         """
         # Set the URL
         url = self.ENDPOINT_LIST % (username)
+
+        if self.basic_auth and self.credential:
+            return requests.get(url, auth=(self.username, self.credential))
+        else:
+            params = {}
+            if self.credential:
+                # Set the authentication header only if the password is set
+                params = {'access_token': self.credential}
+            return requests.get(url, params=params)
+
+    def request_list_starred_gists(self, username):
+        """ Call to get a list of gists for user.
+
+        """
+        # Set the URL
+        url = self.ENDPOINT_STARRED
 
         if self.basic_auth and self.credential:
             return requests.get(url, auth=(self.username, self.credential))
@@ -168,6 +185,20 @@ class GithubFacade(object):
         else:
             params = {'access_token': self.credential}
             return requests.post(url, params=params)
+
+    def star_gist(self, gist_id):
+        """ Requests to GitHub Gist API to star a gist. """
+
+        url = self.ENDPOINT_STAR % (gist_id)
+        if self.basic_auth:
+            params = {}
+            params['content-length'] = 0
+            return requests.put(url, auth=(self.username, self.credential), params=params)
+        else:
+            params = {}
+            params['access_token'] = self.credential
+            params['content-length'] = 0
+            return requests.put(url, params=params)
 
     def authorize(self, payload):
         """ Authorize the current app.
@@ -259,8 +290,7 @@ def download(url, destination_dir, file_name, file_size):
     """
 
     destination_path = os.path.join(destination_dir, file_name)
-    print (literals.DOWNLOADING
-            % (url, destination_path, file_size))
+    print (literals.DOWNLOADING % (url, destination_path, file_size))
 
     # Open the remote url as a file, read it and write it in
     # target directory

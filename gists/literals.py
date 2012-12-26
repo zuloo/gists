@@ -78,3 +78,7 @@ CREDENTIAL_NOT_FOUND = ("Credential should be informed via configuration "
 AUTHORIZE_NOK = "Could not get an authorization token. Github reason: '%s'"
 
 FORK_ERROR = "Can not fork the gist '%s'. Github reason: '%s'"
+
+STAR_OK = "Gist '%s' starred succesfully"
+
+STAR_NOK = "Can not star the gist. Github reason: '%s'"

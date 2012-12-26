@@ -51,12 +51,13 @@ def handle_list(args):
         print literals.USER_NOT_FOUND
         sys.exit()
 
-    # If '--private' option, password becomes mandatory. Load it. """
-    if args.private:
-        # Get the 'secret' argument if exists, otherwise take it from
+    # If '--private' or '--starred' options, password becomes mandatory.
+    # Load it.
+    if args.private or args.starred:
+        # Get the 'credentials' argument if exists, otherwise take it from
         # configuration file. If 'secret' can not be loaded, raise an exception
-        if args.secret:
-            credential = args.secret
+        if args.credentials:
+            credential = args.credentials
         else:
             credential = config.getConfigToken()
             if not credential:
@@ -65,16 +66,18 @@ def handle_list(args):
     else:
         credential = None
 
-    return username, utils.GithubFacade(args.user, credential)
+    return (username, utils.GithubFacade(args.user, credential),
+        args.starred)
 
 
 def handle_update(args):
     """ Handle the arguments to call the 'update gist' functionality. """
 
-    # Get the 'secret' argument if exists, otherwise take it from configuration
-    # file. If 'secret' can not be loaded, raise an exception
-    if args.secret:
-        credential = args.secret
+    # Get the 'credentials' argument if exists, otherwise take it from
+    # configuration file. If 'credentials' can not be loaded, raise an
+    # exception
+    if args.credentials:
+        credential = args.credentials
     else:
         credential = config.getConfigToken()
     if not credential:
@@ -84,7 +87,7 @@ def handle_update(args):
     if not args.input_dir:
         args.input_dir = "./"
 
-    return (args.gist_id,  args.description, args.filenames,
+    return (args.gist_id, args.description, args.filenames,
         args.input_dir, args.new, args.remove,
         utils.GithubFacade(args.user, credential))
 
@@ -94,8 +97,8 @@ def handle_post(args):
 
     # Get the 'secret' argument if exists, otherwise take it from configuration
     # file. If 'secret' can not be loaded, raise an exception
-    if args.secret:
-        credential = args.secret
+    if args.credentials:
+        credential = args.credentials
     else:
         credential = config.getConfigToken()
     if not credential:
@@ -128,10 +131,11 @@ def handle_get(args):
 def handle_delete(args):
     """ Handle the arguments to call the 'delete' gists functionality. """
 
-    # Get the 'secret' argument if exists, otherwise take it from configuration
-    # file. If 'secret' can not be loaded, raise an exception
-    if args.secret:
-        credential = args.secret
+    # Get the 'credentials' argument if exists, otherwise take it from
+    # configuration file. Otherwise, if 'token' can not be loaded, raise an
+    # exception
+    if args.credentials:
+        credential = args.credentials
     else:
         credential = config.getConfigToken()
     if not credential:
@@ -143,16 +147,34 @@ def handle_delete(args):
 
 def handle_authorize(args):
     """ Handle the arguments to call the 'authorize' gists functionality. """
-    return (utils.GithubFacade(args.user, args.secret),)
+    return (utils.GithubFacade(args.user, args.credentials),)
 
 
 def handle_fork(args):
     """ Handle the arguments to call the 'fork' gists functionality. """
 
-    # Get the 'secret' argument if exists, otherwise take it from configuration
-    # file. If 'secret' can not be loaded, raise an exception
-    if args.secret:
-        credential = args.secret
+    # Get the 'credentials' argument if exists, otherwise take it from
+    # configuration file. Otherwise, if 'token' can not be loaded, raise an
+    # exception
+    if args.credentials:
+        credential = args.credentials
+    else:
+        credential = config.getConfigToken()
+    if not credential:
+        print literals.CREDENTIAL_NOT_FOUND
+        sys.exit()
+
+    return args.gist_id, utils.GithubFacade(args.user, credential)
+
+
+def handle_star(args):
+    """ Handle the arguments to call the 'star' gists functionality. """
+
+    # Get the 'credentials' argument if exists, otherwise take it from
+    # configuration file. Otherwise, if 'token' can not be loaded, raise an
+    # exception
+    if args.credentials:
+        credential = args.credentials
     else:
         credential = config.getConfigToken()
     if not credential:

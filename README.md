@@ -18,7 +18,7 @@ First time you run 'gists', execute the command
 
 <!-- language: bash -->
 
-    $ gists authorize -u your_github_user -s your_github_password
+    $ gists authorize -u your_github_user -c your_github_password
 
 
 And the file ~/.gistsrc (which stores the 'gists' configuration) will be written
@@ -36,13 +36,13 @@ credentials to perform actions that needs authentication. Method is just:
 
 <!-- language: bash -->
 
-    $ gists authorize -u your_github_user -s your_github_password
+    $ gists authorize -u your_github_user -c your_github_password
 
 <!-- language: lang-none -->
 
 You can perform this actions many times you wish to override the values.
 
-If you don't want to authorize the app, you can always use the **-u** and **-s** parameters to provide the
+If you don't want to authorize the app, you can always use the **-u** and **-c** parameters to provide the
 credentials in each command.
 
 
