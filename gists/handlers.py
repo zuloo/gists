@@ -109,7 +109,7 @@ def handle_post(args):
         public = True
 
     if not args.input_dir:
-        args.input_dit = "./"
+        args.input_dir = "./"
 
     return (public, args.filenames, args.input_dir, args.description,
         utils.GithubFacade(args.user, credential))
