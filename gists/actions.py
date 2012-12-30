@@ -388,7 +388,7 @@ def fork(gist_id, facade):
 def star(gist_id, facade):
     """ Stars a gist.
 
-    :param gistid: identifier of the Gist to fork
+    :param gistid: identifier of the Gist to star
     :param facade: instance of the object that actually performs the request
     """
     response = facade.star_gist(gist_id)
@@ -397,8 +397,25 @@ def star(gist_id, facade):
         result = build_result(True, literals.STAR_OK, gist_id)
 
     else:
-        print response.status_code
-        print response.headers
-        print response.content
         res_message = response.json['message']
-        return build_result(False, literals.STAR_NOK, res_message)
+        result = build_result(False, literals.STAR_NOK, res_message)
+
+    return result
+
+
+def unstar(gist_id, facade):
+    """ Unstars a gist.
+
+    :param gistid: identifier of the Gist to unstar
+    :param facade: instance of the object that actually performs the request
+    """
+    response = facade.unstar_gist(gist_id)
+
+    if response.ok:
+        result = build_result(True, literals.UNSTAR_OK, gist_id)
+
+    else:
+        res_message = response.json['message']
+        result = build_result(False, literals.UNSTAR_NOK, res_message)
+
+    return result

@@ -191,14 +191,23 @@ class GithubFacade(object):
 
         url = self.ENDPOINT_STAR % (gist_id)
         if self.basic_auth:
-            params = {}
-            params['content-length'] = 0
-            return requests.put(url, auth=(self.username, self.credential), params=params)
+            headers = {'Content-length': '0'}
+            return requests.put(url, auth=(self.username, self.credential),
+                    headers=headers)
         else:
-            params = {}
-            params['access_token'] = self.credential
-            params['content-length'] = 0
-            return requests.put(url, params=params)
+            params = {'access_token': self.credential}
+            headers = {'Content-length': '0'}
+            return requests.put(url, params=params, headers=headers)
+
+    def unstar_gist(self, gist_id):
+        """ Requests to GitHub Gist API to unstar a gist. """
+
+        url = self.ENDPOINT_STAR % (gist_id)
+        if self.basic_auth:
+            return requests.delete(url, auth=(self.username, self.credential))
+        else:
+            params = {'access_token': self.credential}
+            return requests.delete(url, params=params)
 
     def authorize(self, payload):
         """ Authorize the current app.

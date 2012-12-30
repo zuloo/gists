@@ -31,7 +31,7 @@ and coordinates the 'handlers'->'actions'->'formatters' execution workflow
 
 import argparse
 from actions import (list_gists, show, get, post, delete, update, authorize,
-        fork, star)
+        fork, star, unstar)
 from handlers import (handle_list, handle_show, handle_update,
         handle_authorize, handle_get, handle_post, handle_delete,
         handle_fork, handle_star)
@@ -60,6 +60,7 @@ def run(*args, **kwargs):
     __add_version_parser(subparsers)
     __add_fork_parser(subparsers)
     __add_star_parser(subparsers)
+    __add_unstar_parser(subparsers)
 
     # Parse the arguments
     args = parser.parse_args()
@@ -299,4 +300,24 @@ def __add_star_parser(subparsers):
             help="""Github password. It uses this value as a password instead
             of the 'token' property in configuration file""")
     parser_star.set_defaults(handle_args=handle_star, func=star,
+            formatter=format_star)
+
+
+def __add_unstar_parser(subparsers):
+    """ Define the subparser to handle 'unstar' functionallity.
+
+    :param subparsers: the subparser entity
+    """
+
+    parser_unstar = subparsers.add_parser("unstar",
+            help="Unstar a Gist")
+    parser_unstar.add_argument("gist_id",
+            help="Identifier of the Gist to fork")
+    parser_unstar.add_argument("-u", "--user",
+            help="""Github user. Overrides the default 'user' property
+            in configuration file""")
+    parser_unstar.add_argument("-c", "--credentials",
+            help="""Github password. It uses this value as a password instead
+            of the 'token' property in configuration file""")
+    parser_unstar.set_defaults(handle_args=handle_star, func=unstar,
             formatter=format_star)

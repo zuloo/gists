@@ -82,3 +82,7 @@ FORK_ERROR = "Can not fork the gist '%s'. Github reason: '%s'"
 STAR_OK = "Gist '%s' starred succesfully"
 
 STAR_NOK = "Can not star the gist. Github reason: '%s'"
+
+UNSTAR_OK = "Gist '%s' unstarred succesfully"
+
+UNSTAR_NOK = "Can not unstar the gist. Github reason: '%s'"

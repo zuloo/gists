@@ -168,7 +168,8 @@ def handle_fork(args):
 
 
 def handle_star(args):
-    """ Handle the arguments to call the 'star' gists functionality. """
+    """ Handle the arguments to call the 'star' and 'unstar' gists
+    functionality. """
 
     # Get the 'credentials' argument if exists, otherwise take it from
     # configuration file. Otherwise, if 'token' can not be loaded, raise an

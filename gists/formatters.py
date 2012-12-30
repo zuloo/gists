@@ -164,7 +164,7 @@ def format_authorize(result):
 
 
 def format_star(result):
-    """ Formats the output of the 'star' action.
+    """ Formats the output of the 'star' and 'unstar' action.
 
     :param result: Result instance
     """
@@ -203,8 +203,7 @@ def __format_gist(gist):
     gists_string += str(not gist.public) + '\n'
 
     gists_string += colored.green('Files:\t\t')
-    gist_names = [gistfile.filename for
-                    gistfile in gist.files]
+    gist_names = [gistfile.filename for gistfile in gist.files]
     stringfiles = "[" + ", ".join(gist_names) + "]"
     gists_string += colored.red(stringfiles) + '\n'
 
