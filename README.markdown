@@ -58,12 +58,14 @@ Return a list of gists. Basic usage is:
 
 <!-- language: lang-none -->
 
-This will return a list of Gists from field __user__ from [credentials] section in your (~/.gistsrc) file. 
+This will return a list of Gists from field __user__ from [credentials]() section in your (~/.gistsrc) file. 
 
 #### More arguments: ####
 
 * __-u__ (--user) specifies from whom user you want to retrieve his/her gists.
 * __-p__ (--private) retrieves the private gists from the user besides the public ones. (Needs authentication)
+* __-s__ (--starred) retrieves ONLY the starred gists.
+
 
 
 ### Show a Gist ###
@@ -201,3 +203,31 @@ Fork another user's gist and create a new one where you are the owner
 
 It will fork the gist. If the original gist is public, it will create a public gist. If it is private, it will
 create a private gist. There is no way to change that.
+
+### Star a Gist ###
+
+Mark a Gist as starred.
+
+#### Basic Usage ####
+
+<!-- language: bash -->
+
+    $ gists star gist_id
+
+<!-- language: lang-none -->
+
+It will star the gist. It replicates the behavior of the Gists API. This is: sets the Gist as starred for the current user. If the Gist is already starred, a 'Success' will be returned. (It does not toggle star/unstar nor raises any 'Already Starred' exception)
+
+### Unstar a Gist ###
+
+Mark a Gist as unstarred
+
+#### Basic Usage ####
+
+<!-- language: bash -->
+
+    $ gists unstar gist_id
+
+<!-- language: lang-none -->
+
+It will unstar the gist. It replicates the behavior of the Gists API. This is: sets the Gist as unstarred for the current user. If the Gist is already unstarred, a 'Success' will be returned. (It does not toggle star/unstar nor raises any 'Already Unstarred' exception)
