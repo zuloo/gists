@@ -24,8 +24,9 @@ gists.model
 ~~~~~~~~~~~
 
 Model defines the two classes that extend of builtin python 'dicts'.
-They represent a Gist object and a Gist File. Used to make the code of other
-modules clearer.
+They represent a Gist object and a Gist File. Used to make the code
+of other modules clearer.
+
 
 """
 
@@ -35,7 +36,6 @@ class Gist(dict):
 
     def __init__(self, parsed_gist={}):
         """ Initialize gist object variables. """
-
         super(Gist, self).__init__(parsed_gist)
 
     @property

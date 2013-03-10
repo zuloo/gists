@@ -30,16 +30,14 @@ import os
 """
 
 gists.actions
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 Actions is the main module of the package. It receives data from the 'handlers'
 module, call to GitHub Gists API and manage the response.
-
-
 """
 
 
-def list_gists(username, facade, want_starred):
+def list_gists(facade, username, want_starred=False):
     """ Retrieve the list of gists for a concrete user.
 
     :param token: GitHub authentication token
@@ -65,7 +63,7 @@ def list_gists(username, facade, want_starred):
                             response.json['message'])
 
 
-def get(gist_id, requested_file, destination_dir, facade):
+def get(facade, gist_id, requested_file=None, destination_dir=None):
     """ Download a gist file.
 
     Gists can have several files. This method searches for and downloads
@@ -80,11 +78,11 @@ def get(gist_id, requested_file, destination_dir, facade):
     """
 
     # Get the gist information
-    response = facade.request_gist(gist_id)
+    ok, data = facade.request_gist(gist_id)
 
-    if response.ok:
+    if ok:
         # Gist file found. Parse it into a 'model.Gist' class.
-        gist_obj = model.Gist(response.json)
+        gist_obj = model.Gist(data)
         list_names = [gistfile.filename for gistfile in gist_obj.files]
 
         if len(gist_obj.files) == 1 and not requested_file:
@@ -121,12 +119,12 @@ def get(gist_id, requested_file, destination_dir, facade):
     else:
         # Handle GitHub response error
         result = build_result(False, literals.DOWNLOAD_ERROR,
-                              response.json['message'])
+                              data)
 
     return result
 
 
-def show(gist_id, requested_file, facade):
+def show(facade, gist_id, requested_file=None):
     """ Retrieve a single gist.
 
     If the 'requested_file' is None, then it will show the
@@ -141,11 +139,11 @@ def show(gist_id, requested_file, facade):
     """
 
     # get the gist information
-    response = facade.request_gist(gist_id)
+    ok, data = facade.request_gist(gist_id)
 
-    if response.ok:
+    if ok:
         # Gist found. Parse the json response into the 'model.Gist' class
-        gist_obj = model.Gist(response.json)
+        gist_obj = model.Gist(data)
         if not requested_file:
             # Fill the response with the metadata of the gist
             result = build_result(True, gist_obj)
@@ -165,7 +163,7 @@ def show(gist_id, requested_file, facade):
     else:
         # GitHub response not ok. Parse the response
         result = build_result(False, literals.SHOW_ERROR,
-                              response.json['message'])
+                              data)
 
     return result
 
@@ -366,7 +364,7 @@ def authorize(facade):
     return result
 
 
-def fork(gist_id, facade):
+def fork(facade, gist_id):
     """ Forks a gist.
 
     :param gistid: identifier of the Gist to fork
@@ -385,7 +383,7 @@ def fork(gist_id, facade):
     return result
 
 
-def star(gist_id, facade):
+def star(facade, gist_id):
     """ Stars a gist.
 
     :param gistid: identifier of the Gist to star
@@ -403,7 +401,7 @@ def star(gist_id, facade):
     return result
 
 
-def unstar(gist_id, facade):
+def unstar(facade, gist_id):
     """ Unstars a gist.
 
     :param gistid: identifier of the Gist to unstar

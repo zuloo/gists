@@ -117,7 +117,11 @@ class GithubFacade(object):
 
         # Set the URL and send the request
         url = self.ENDPOINT_GIST % (id_gist)
-        return requests.get(url)
+        response = requests.get(url)
+        if response.ok:
+            return True, response.json
+        else:
+            return False, response.json['message']
 
     def create_gist(self, payload):
         """ Create a new gist.

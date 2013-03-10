@@ -36,7 +36,7 @@ setup(name='gists',
       include_package_data=True,
       long_description=README,
       license='MIT',
-      test_suite='tests',
+      test_suite='gists.tests',
       classifiers=[
            "Programming Language :: Python",
            "Programming Language :: Python :: 2.6",

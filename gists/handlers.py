@@ -61,7 +61,7 @@ def handle_list(args):
     else:
         credential = None
 
-    return (username, utils.GithubFacade(args.user, credential),
+    return (utils.GithubFacade(args.user, credential), username,
             args.starred)
 
 
@@ -70,9 +70,9 @@ def handle_update(args):
     if not args.input_dir:
         args.input_dir = "./"
 
-    return (args.gist_id, args.description, args.filenames,
-            args.input_dir, args.new, args.remove,
-            utils.GithubFacade(args.user, get_credentials(args)))
+    return (utils.GithubFacade(args.user, get_credentials(args),
+            args.gist_id, args.description, args.filenames,
+            args.input_dir, args.new, args.remove))
 
 
 def handle_post(args):
@@ -87,23 +87,23 @@ def handle_post(args):
     if not args.input_dir:
         args.input_dir = "./"
 
-    return (public, args.filenames, args.input_dir, args.description,
-            utils.GithubFacade(args.user, get_credentials(args)))
+    return (utils.GithubFacade(args.user, get_credentials(args)),
+            public, args.filenames, args.input_dir, args.description)
 
 
 def handle_show(args):
     """ Handle the arguments to call the 'show' gists functionality. """
-    return args.gist_id, args.filename, utils.GithubFacade()
+    return utils.GithubFacade(), args.gist_id, args.filename
 
 
 def handle_get(args):
     """ Handle the arguments to call the 'get' gists functionality. """
-    return args.gist_id, args.filename, args.output_dir, utils.GithubFacade()
+    return utils.GithubFacade(), args.gist_id, args.filename, args.output_dir
 
 
 def handle_delete(args):
     """ Handle the arguments to call the 'delete' gists functionality. """
-    return args.gist_id, utils.GithubFacade(args.user, get_credentials(args))
+    return utils.GithubFacade(args.user, get_credentials(args)), args.gist_id
 
 
 def handle_authorize(args):
@@ -114,7 +114,7 @@ def handle_authorize(args):
 
 def handle_fork(args):
     """ Handle the arguments to call the 'fork' gists functionality. """
-    return args.gist_id, utils.GithubFacade(args.user, get_credentials(args))
+    return utils.GithubFacade(args.user, get_credentials(args)), args.gist_id
 
 
 def handle_star(args):
