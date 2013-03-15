@@ -23,11 +23,12 @@
 gists.model
 ~~~~~~~~~~~
 
-Model defines the two classes that extend of builtin python 'dicts'. They represent
-a Gist object and a Gist File. Used to make the code of other modules clearer.
-
+Model defines the two classes that extend of builtin python 'dicts'.
+They represent a Gist object and a Gist File. Used to make the code of other
+modules clearer.
 
 """
+
 
 class Gist(dict):
     """ :class: `Gist <Gist>` Simple Gist object. """
@@ -76,11 +77,12 @@ class Gist(dict):
             self['files'] = {}
             return self['files']
         return [GistFile(self['files'][gistfile])
-                for gistfile in self['files'] if self['files'][gistfile] != 'null']
+                for gistfile in self['files']
+                if self['files'][gistfile] != 'null']
 
     def getFile(self, requested_filename):
         candidates = [gistfile for gistfile in self.files
-                if gistfile.filename == requested_filename]
+                      if gistfile.filename == requested_filename]
         if len(candidates) == 0:
             return None
         return candidates[0]

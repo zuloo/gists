@@ -131,11 +131,11 @@ class GithubFacade(object):
 
         if self.basic_auth:
             return requests.post(url, data=data_json, headers=headers,
-                    auth=(self.username, self.credential))
+                                 auth=(self.username, self.credential))
         else:
             params = {'access_token': self.credential}
             return requests.post(url, data=data_json, headers=headers,
-                    params=params)
+                                 params=params)
 
     def update_gist(self, payload):
         """ Update an existent Gist via PATCH method.
@@ -150,11 +150,11 @@ class GithubFacade(object):
 
         if self.basic_auth:
             return requests.patch(url, data=data_json, headers=headers,
-                    auth=(self.username, self.credential))
+                                  auth=(self.username, self.credential))
         else:
             params = {'access_token': self.credential}
             return requests.patch(url, data=data_json, headers=headers,
-                    params=params)
+                                  params=params)
 
     def delete_gist(self, id_gist):
         """ Delete an existent Gist.
@@ -165,7 +165,7 @@ class GithubFacade(object):
         url = self.ENDPOINT_GIST % (id_gist)
         if self.basic_auth:
             return requests.delete(url,
-                    auth=(self.username, self.credential))
+                                   auth=(self.username, self.credential))
         else:
             params = {'access_token': self.credential}
             return requests.delete(url, params=params)
@@ -174,7 +174,7 @@ class GithubFacade(object):
         """ List the authorizations for the given user. """
 
         return requests.get(self.ENDPOINT_AUTH,
-                auth=(self.username, self.credential))
+                            auth=(self.username, self.credential))
 
     def fork_gist(self, gist_id):
         """ Requests to GitHub Gist API to fork a gist. """
@@ -193,7 +193,7 @@ class GithubFacade(object):
         if self.basic_auth:
             headers = {'Content-length': '0'}
             return requests.put(url, auth=(self.username, self.credential),
-                    headers=headers)
+                                headers=headers)
         else:
             params = {'access_token': self.credential}
             headers = {'Content-length': '0'}
@@ -219,7 +219,7 @@ class GithubFacade(object):
         headers = {'Content-type': self.APPLICATION_JSON}
         data_json = json.dumps(payload, indent=2)
         return requests.post(url, data=data_json, headers=headers,
-                auth=(self.username, self.credential))
+                             auth=(self.username, self.credential))
 
 
 class GistsConfigurer(object):

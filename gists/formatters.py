@@ -137,7 +137,7 @@ def format_list(result):
                 description = gist.description
             gists_string += description
             gist_names = [gistfile.filename for
-                    gistfile in gist.files]
+                          gistfile in gist.files]
             stringfiles = " [" + ", ".join(gist_names) + "]"
             gists_string += colored.red(stringfiles)
             if not gist.public:
@@ -233,13 +233,13 @@ def __format_file(file_gist):
 
     # Format Gist data
     gist_string += (colored.green("Language:") + " " +
-            colored.red(file_gist.language) + "\n")
+                    colored.red(file_gist.language) + "\n")
     gist_string += (colored.green("Size:") + " " +
-         colored.red(file_gist.size) + "\n")
+                    colored.red(file_gist.size) + "\n")
     gist_string += (colored.green("Raw Url:") + " " +
-            colored.red(file_gist.raw_url + "\n"))
+                    colored.red(file_gist.raw_url + "\n"))
     gist_string += (colored.green("Content:\n\n")
-            + file_gist.content + "\n\n")
+                    + file_gist.content + "\n\n")
 
     # Prepare the Footer
     gist_string += colored.cyan('-' * int(columns)) + "\n"

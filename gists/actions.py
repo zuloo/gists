@@ -62,7 +62,7 @@ def list_gists(username, facade, want_starred):
     else:
         # GitHub response error. Parse the response
         return build_result(False, literals.LISTS_ERROR,
-                response.json['message'])
+                            response.json['message'])
 
 
 def get(gist_id, requested_file, destination_dir, facade):
@@ -91,16 +91,16 @@ def get(gist_id, requested_file, destination_dir, facade):
             # Download the only file in the gist
             gistfile = gist_obj.files[0]
             download(gistfile.raw_url, destination_dir,
-                    gistfile.filename, gistfile.size)
+                     gistfile.filename, gistfile.size)
 
             result = build_result(True, literals.DOWNLOAD_OK,
-                    gistfile.filename)
+                                  gistfile.filename)
         else:
             # Gist have more than one file and filename not specified. Error
             if not requested_file:
                 list_names = ", ".join(list_names)
                 result = build_result(False, literals.DOWNLOAD_MORE_FILES,
-                        list_names)
+                                      list_names)
             else:
                 # Search for the Gist file
                 gistfile = gist_obj.getFile(requested_file)
@@ -108,20 +108,20 @@ def get(gist_id, requested_file, destination_dir, facade):
 
                     # Gist file found. Download it.
                     download(gistfile.raw_url, destination_dir,
-                            gistfile.filename, gistfile.size)
+                             gistfile.filename, gistfile.size)
 
                     result = build_result(True, literals.DOWNLOAD_OK,
-                            gistfile.filename)
+                                          gistfile.filename)
                 else:
                     # Requested file not found in Gist
                     list_of_names = ", ".join(list_names)
-                    result = build_result(False,
-                            literals.FILE_NOT_FOUND, list_of_names)
+                    result = build_result(False, literals.FILE_NOT_FOUND,
+                                          list_of_names)
 
     else:
         # Handle GitHub response error
         result = build_result(False, literals.DOWNLOAD_ERROR,
-                response.json['message'])
+                              response.json['message'])
 
     return result
 
@@ -159,13 +159,13 @@ def show(gist_id, requested_file, facade):
             else:
                 # File not found in Gist
                 list_of_names = ", ".join(list_names)
-                result = build_result(False,
-                        literals.FILE_NOT_FOUND, list_of_names)
+                result = build_result(False, literals.FILE_NOT_FOUND,
+                                      list_of_names)
 
     else:
         # GitHub response not ok. Parse the response
         result = build_result(False, literals.SHOW_ERROR,
-                response.json['message'])
+                              response.json['message'])
 
     return result
 
@@ -272,7 +272,7 @@ def update(gistid, description, filenames, filepath, new, remove, facade):
         gist = model.Gist(response.json)
     else:
         result = build_result(False, literals.UPDATE_NOK,
-                response.json['message'])
+                              response.json['message'])
         return result
 
     if description:
@@ -317,7 +317,7 @@ def update(gistid, description, filenames, filepath, new, remove, facade):
         return build_result(True, gist)
     else:
         return build_result(False, literals.UPDATE_NOK,
-                response.json['message'])
+                            response.json['message'])
 
     return result
 
@@ -341,7 +341,7 @@ def authorize(facade):
                 return build_result(True, authorization)
     else:
         return build_result(False, literals.AUTHORIZE_NOK,
-                response.json['message'])
+                            response.json['message'])
 
     # build the authorization request
     auth = model.Authorization()
@@ -361,7 +361,7 @@ def authorize(facade):
         configurer.setConfigToken(auth.token)
     else:
         result = build_result(False, literals.AUTHORIZE_NOK,
-                response.json['message'])
+                              response.json['message'])
 
     return result
 
@@ -379,7 +379,7 @@ def fork(gist_id, facade):
     else:
         if response.json:
             result = build_result(False, literals.FORK_ERROR, gist_id,
-                    response.json['message'])
+                                  response.json['message'])
         else:
             result = build_result(False, literals.UNHANDLED_EXCEPTION)
     return result

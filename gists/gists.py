@@ -31,20 +31,22 @@ and coordinates the 'handlers'->'actions'->'formatters' execution workflow
 
 import argparse
 from actions import (list_gists, show, get, post, delete, update, authorize,
-        fork, star, unstar)
+                     fork, star, unstar)
 from handlers import (handle_list, handle_show, handle_update,
-        handle_authorize, handle_get, handle_post, handle_delete,
-        handle_fork, handle_star)
+                      handle_authorize, handle_get, handle_post, handle_delete,
+                      handle_fork, handle_star)
 from formatters import (format_list, format_post, format_update,
-        format_get, format_show, format_delete, format_authorize, format_star)
+                        format_get, format_show, format_delete,
+                        format_authorize, format_star)
 from version import VERSION
 
 
 def run(*args, **kwargs):
 
     # Initialize argument's parser
-    parser = argparse.ArgumentParser(description=
-            'Manage Github gists from CLI', epilog="Happy Gisting!")
+    description = 'Manage Github gists from CLI'
+    parser = argparse.ArgumentParser(description=description,
+                                     epilog="Happy Gisting!")
 
     # Define subparsers to handle each action
     subparsers = parser.add_subparsers(help="Available commands.")
@@ -89,22 +91,21 @@ def __add_list_parser(subparsers):
     # Add the subparser to handle the list of gists
     parser_list = subparsers.add_parser("list", help="List gists")
     parser_list.add_argument("-u", "--user",
-            help="""Github user. Overrides the default 'user' property
-            in configuration file""")
-    parser_list.add_argument("-c", "--credentials",
-            help="""Github password. It uses this value as a password instead
-            of the 'token' property in configuration file""")
+                             help="""Github user. Overrides the default
+                             'user' property in configuration file""")
+    parser_list.add_argument("-c", "--credentials", help="""Github password.
+                             It uses this value as a password instead of the
+                             'token' property in configuration file""")
     group1 = parser_list.add_mutually_exclusive_group()
-    group1.add_argument("-p", "--private",
-            help="""Return the private gists besides the public ones.
-            Password needed (by arguments or in configuration file)""",
-            action="store_true")
-    group1.add_argument("-s", "--starred",
-            help="""Return ONLY the starred gists.
-            Password needed (by arguments or in configuration file)""",
-            action="store_true")
+    group1.add_argument("-p", "--private", help="""Return the private gists
+                        besides the public ones. Password needed (by arguments
+                        or in configuration file)""",
+                        action="store_true")
+    group1.add_argument("-s", "--starred", help="""Return ONLY the starred
+                        gists. Password needed (by arguments or in
+                        configuration file)""", action="store_true")
     parser_list.set_defaults(handle_args=handle_list,
-            func=list_gists, formatter=format_list)
+                             func=list_gists, formatter=format_list)
 
 
 def __add_show_parser(subparsers):
@@ -113,16 +114,16 @@ def __add_show_parser(subparsers):
     :param subparsers: the subparser entity
     """
     # Add the subparser to handle the 'show' action
-    parser_show = subparsers.add_parser("show",
-            help="""Show a gist. Shows the general gist data by default.
-            With '-f' (--filename) option, shows the content of one of the
-            gist files""")
-    parser_show.add_argument("gist_id",
-            help="Identifier of the gist to retrieve")
-    parser_show.add_argument("-f", "--filename",
-            help="Gist file to show.")
+    parser_show = subparsers.add_parser("show", help="""Show a gist. Shows
+                                        the general gist data by default.
+                                        With '-f' (--filename) option, shows
+                                        the content of one of the gist files
+                                        """)
+    parser_show.add_argument("gist_id", help="""Identifier of the gist to
+                              retrieve""")
+    parser_show.add_argument("-f", "--filename", help="Gist file to show.")
     parser_show.set_defaults(handle_args=handle_show, func=show,
-            formatter=format_show)
+                             formatter=format_show)
 
 
 def __add_get_parser(subparsers):
@@ -132,18 +133,17 @@ def __add_get_parser(subparsers):
     """
 
     # Add the subparser to handle the 'get' action
-    parser_get = subparsers.add_parser("get",
-            help="""Download a single gist file. If the gist only
-            have a single file, argument '-f' (--filename) is not needed""")
-    parser_get.add_argument("gist_id",
-            help="Identifier of the gist to retrieve")
-    parser_get.add_argument("-f", "--filename",
-            help="Gist file to download.")
-    parser_get.add_argument("-o", "--output_dir",
-            help="Destination directory",
-            default=".")
+    parser_get = subparsers.add_parser("get", help="""Download a single gist
+                                       file. If the gist only have a single
+                                       file, argument '-f' (--filename) is not
+                                       needed""")
+    parser_get.add_argument("gist_id", help="""Identifier of the gist to
+                            retrieve""")
+    parser_get.add_argument("-f", "--filename", help="Gist file to download.")
+    parser_get.add_argument("-o", "--output_dir", help="Destination directory",
+                            default=".")
     parser_get.set_defaults(handle_args=handle_get, func=get,
-            formatter=format_get)
+                            formatter=format_get)
 
 
 def __add_create_parser(subparsers):
@@ -153,25 +153,22 @@ def __add_create_parser(subparsers):
     """
 
     # Add the subparser to handle the 'create' action
-    parser_post = subparsers.add_parser("create",
-            help="Create a new gist")
-    parser_post.add_argument("-u", "--user",
-            help="""Github user. Overrides the default 'user' property
-            in configuration file""")
-    parser_post.add_argument("-c", "--credentials",
-            help="""Github password. It uses this value as a password instead
-            of the 'token' property in configuration file""")
-    parser_post.add_argument("-f", "--filenames", nargs='+',
-            help="Specify gist file to upload.", required=True)
-    parser_post.add_argument("-p", "--private",
-            help="""Private gist. (public by default)""",
-            action="store_true")
-    parser_post.add_argument("-i", "--input_dir",
-            help="Input directory where the source file is")
-    parser_post.add_argument("-d", "--description",
-            help="escription for the gist to create")
+    parser_post = subparsers.add_parser("create", help="Create a new gist")
+    parser_post.add_argument("-u", "--user", help="""Github user. Overrides the
+                             default 'user' property in configuration file""")
+    parser_post.add_argument("-c", "--credentials", help="""Github password.
+                             It uses this value as a password instead of the
+                             'token' property in configuration file""")
+    parser_post.add_argument("-f", "--filenames", nargs='+', help="""Specify
+                             gist file to upload.""", required=True)
+    parser_post.add_argument("-p", "--private", help="""Private gist. (public
+                             by default)""", action="store_true")
+    parser_post.add_argument("-i", "--input_dir", help="""Input directory where
+                             the source file is""")
+    parser_post.add_argument("-d", "--description", help="""Description for
+                             the gist to create""")
     parser_post.set_defaults(handle_args=handle_post, func=post,
-            formatter=format_post)
+                             formatter=format_post)
 
 
 def __add_update_parser(subparsers):
@@ -181,35 +178,34 @@ def __add_update_parser(subparsers):
     """
 
     # Add the subparser to handle the 'update' action
-    parser_update = subparsers.add_parser("update",
-            help="Update a gist")
-    parser_update.add_argument("gist_id",
-            help="Identifier of the gist to update")
-    parser_update.add_argument("-u", "--user",
-            help="""Github user. Overrides the default 'user' property
-            in configuration file""")
-    parser_update.add_argument("-c", "--credentials",
-            help="""Github password. It uses this value as a password instead
-            of the 'token' property in configuration file""")
+    parser_update = subparsers.add_parser("update", help="Update a gist")
+    parser_update.add_argument("gist_id", help="""Identifier of the gist to
+                               update""")
+    parser_update.add_argument("-u", "--user", help="""Github user. Overrides
+                               the default 'user' property in configuration
+                               file""")
+    parser_update.add_argument("-c", "--credentials", help="""Github password.
+                               It uses this value as a password instead of the
+                               'token' property in configuration file""")
+
     group1 = parser_update.add_argument_group("File options",
-            "Update Gist files")
+                                              "Update Gist files")
     group1.add_argument("-f", "--filenames", nargs='+',
-             help="Gist file to update.")
+                        help="Gist file to update.")
     group11 = group1.add_mutually_exclusive_group()
-    group11.add_argument("-n", "--new", action="store_true",
-            help="New file for the gist. '-f' (--filename) argument needed",
-            default=False)
+    group11.add_argument("-n", "--new", action="store_true", help="""New file
+                         for the gist. '-f' (--filename) argument needed""",
+                         default=False)
     group11.add_argument("-r", "--remove", action="store_true",
-            help="Delete file for the gist. '-f' (--filename) argument needed",
-            default=False)
-    group1.add_argument("-i", "--input_dir",
-            help="Input directory where the source file is")
+                         help="""Delete file for the gist. '-f' (--filename)
+                         argument needed""", default=False)
+    group1.add_argument("-i", "--input_dir", help="""Input directory where
+                        the source file is""")
     group2 = parser_update.add_argument_group('Metadata options',
-            "Update Gist General Data")
-    group2.add_argument("-d", "--description",
-            help="Update gist description")
+                                              "Update Gist General Data")
+    group2.add_argument("-d", "--description", help="Update gist description")
     parser_update.set_defaults(handle_args=handle_update, func=update,
-            formatter=format_update)
+                               formatter=format_update)
 
 
 def __add_delete_parser(subparsers):
@@ -220,16 +216,16 @@ def __add_delete_parser(subparsers):
 
     # Add the subparser to handle the 'delete' action
     parser_delete = subparsers.add_parser("delete", help="Delete a gist")
-    parser_delete.add_argument("gist_id",
-            help="Identifier of the Gist to delete")
-    parser_delete.add_argument("-u", "--user",
-            help="""Github user. Overrides the default 'user' property
-            in configuration file""")
-    parser_delete.add_argument("-c", "--credentials",
-            help="""Github password. It uses this value as a password instead
-            of the 'token' property in configuration file""")
+    parser_delete.add_argument("gist_id", help="""Identifier of the Gist to
+                               delete""")
+    parser_delete.add_argument("-u", "--user", help="""Github user. Overrides
+                               the default 'user' property in configuration
+                               file""")
+    parser_delete.add_argument("-c", "--credentials", help="""Github password.
+                               It uses this value as a password instead of
+                               the 'token' property in configuration file""")
     parser_delete.set_defaults(handle_args=handle_delete, func=delete,
-            formatter=format_delete)
+                               formatter=format_delete)
 
 
 def __add_authorize_parser(subparsers):
@@ -239,16 +235,17 @@ def __add_authorize_parser(subparsers):
     """
 
     # Add the subparser to handle the 'authorize' action.
-    parser_authorize = subparsers.add_parser("authorize",
-            help="Authorize the 'gists' module")
-    parser_authorize.add_argument("-u", "--user",
-            help="""Your GitHub user used to generate the auth token. """,
-            required=True)
-    parser_authorize.add_argument("-c", "--credentials",
-            help="""Github password. It uses this value as a password instead
-            of the 'token' property in configuration file""")
+    parser_authorize = subparsers.add_parser("authorize", help="""Authorize
+                                             the 'gists' module""")
+    parser_authorize.add_argument("-u", "--user", help="""Your GitHub user
+                                  used to generate the auth token. """,
+                                  required=True)
+    parser_authorize.add_argument("-c", "--credentials", help="""Github
+                                  password. It uses this value as a password
+                                  instead of the 'token' property in
+                                  configuration file""")
     parser_authorize.set_defaults(handle_args=handle_authorize, func=authorize,
-            formatter=format_authorize)
+                                  formatter=format_authorize)
 
 
 def __add_version_parser(subparsers):
@@ -257,10 +254,11 @@ def __add_version_parser(subparsers):
     :param subparsers: the subparser entity
     """
 
-    parser_version = subparsers.add_parser("version",
-            help="Print the version of the release")
-    parser_version.set_defaults(handle_args=lambda x: (None,),
-            func=lambda x: None, formatter=lambda x: VERSION)
+    parser_version = subparsers.add_parser("version", help="""Print the version
+                                           of the release""")
+    parser_version.set_defaults(handle_args=lambda: (None,),
+                                func=lambda: None,
+                                formatter=lambda: VERSION)
 
 
 def __add_fork_parser(subparsers):
@@ -269,18 +267,16 @@ def __add_fork_parser(subparsers):
     :param subparsers: the subparser entity
     """
 
-    parser_fork = subparsers.add_parser("fork",
-            help="Fork another users' gists")
-    parser_fork.add_argument("gist_id",
-            help="Identifier of the Gist to fork")
-    parser_fork.add_argument("-u", "--user",
-            help="""Github user. Overrides the default 'user' property
-            in configuration file""")
-    parser_fork.add_argument("-c", "--credentials",
-            help="""Github password. It uses this value as a password instead
-            of the 'token' property in configuration file""")
+    parser_fork = subparsers.add_parser("fork", help="""Fork another users'
+                                        gists""")
+    parser_fork.add_argument("gist_id", help="Identifier of the Gist to fork")
+    parser_fork.add_argument("-u", "--user", help="""Github user. Overrides the
+                             default 'user' property in configuration file""")
+    parser_fork.add_argument("-c", "--credentials", help="""Github password. It
+                             uses this value as a password instead of the
+                             'token' property in configuration file""")
     parser_fork.set_defaults(handle_args=handle_fork, func=fork,
-            formatter=format_post)
+                             formatter=format_post)
 
 
 def __add_star_parser(subparsers):
@@ -289,18 +285,16 @@ def __add_star_parser(subparsers):
     :param subparsers: the subparser entity
     """
 
-    parser_star = subparsers.add_parser("star",
-            help="Star a Gist")
-    parser_star.add_argument("gist_id",
-            help="Identifier of the Gist to fork")
-    parser_star.add_argument("-u", "--user",
-            help="""Github user. Overrides the default 'user' property
-            in configuration file""")
-    parser_star.add_argument("-c", "--credentials",
-            help="""Github password. It uses this value as a password instead
-            of the 'token' property in configuration file""")
+    parser_star = subparsers.add_parser("star", help="Star a Gist")
+    parser_star.add_argument("gist_id", help="Identifier of the Gist to fork")
+    parser_star.add_argument("-u", "--user", help="""Github user. Overrides
+                             the default 'user' property in configuration
+                             file""")
+    parser_star.add_argument("-c", "--credentials", help="""Github password. It
+                             uses this value as a password instead of the
+                             'token' property in configuration file""")
     parser_star.set_defaults(handle_args=handle_star, func=star,
-            formatter=format_star)
+                             formatter=format_star)
 
 
 def __add_unstar_parser(subparsers):
@@ -309,15 +303,14 @@ def __add_unstar_parser(subparsers):
     :param subparsers: the subparser entity
     """
 
-    parser_unstar = subparsers.add_parser("unstar",
-            help="Unstar a Gist")
-    parser_unstar.add_argument("gist_id",
-            help="Identifier of the Gist to fork")
-    parser_unstar.add_argument("-u", "--user",
-            help="""Github user. Overrides the default 'user' property
-            in configuration file""")
-    parser_unstar.add_argument("-c", "--credentials",
-            help="""Github password. It uses this value as a password instead
-            of the 'token' property in configuration file""")
+    parser_unstar = subparsers.add_parser("unstar", help="Unstar a Gist")
+    parser_unstar.add_argument("gist_id", help="""Identifier of the Gist to
+                               fork""")
+    parser_unstar.add_argument("-u", "--user", help="""Github user. Overrides
+                               the default 'user' property in configuration
+                               file""")
+    parser_unstar.add_argument("-c", "--credentials", help="""Github password.
+                               It uses this value as a password instead of the
+                               'token' property in configuration file""")
     parser_unstar.set_defaults(handle_args=handle_star, func=unstar,
-            formatter=format_star)
+                               formatter=format_star)

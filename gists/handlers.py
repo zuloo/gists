@@ -67,7 +67,7 @@ def handle_list(args):
         credential = None
 
     return (username, utils.GithubFacade(args.user, credential),
-        args.starred)
+            args.starred)
 
 
 def handle_update(args):
@@ -88,8 +88,8 @@ def handle_update(args):
         args.input_dir = "./"
 
     return (args.gist_id, args.description, args.filenames,
-        args.input_dir, args.new, args.remove,
-        utils.GithubFacade(args.user, credential))
+            args.input_dir, args.new, args.remove,
+            utils.GithubFacade(args.user, credential))
 
 
 def handle_post(args):
@@ -115,7 +115,7 @@ def handle_post(args):
         args.input_dir = "./"
 
     return (public, args.filenames, args.input_dir, args.description,
-        utils.GithubFacade(args.user, credential))
+            utils.GithubFacade(args.user, credential))
 
 
 def handle_show(args):

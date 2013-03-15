@@ -36,7 +36,8 @@ LISTS_ERROR = "Can not return the list of gists. Github reason: '%s'"
 DOWNLOAD_OK = "File '%s' downloaded successfully!"
 
 DOWNLOAD_MORE_FILES = ("Gist has more than one file. "
-   "Specify file by '-f' option. Available values are [%s]")
+                       """Specify file by '-f' option. Available values are
+                       [%s] """)
 
 FILE_NOT_FOUND = ("File not found in gist. Available values are [%s])")
 
@@ -59,21 +60,22 @@ UPDATE_NOK = "Can not update the gist. Github reason: '%s'"
 UPDATE_RM_NF = "Can not remove a file that actually does not exist in gist. "
 
 UPDATE_NF = ("Filename not found in gist. Use the '-n' (--new) argument "
-   "to attach a new file in the gist.")
+             "to attach a new file in the gist.")
 
-UPDATE_NEW_DUP = ("File already exists in Gist. Remove the "
-   "'n' (--new) argument if you want to update the existent file. Change the "
-   "file name if you actually want to update a new file in the gist. ")
+UPDATE_NEW_DUP = """File already exists in Gist. Remove the 'n' (--new)
+                 argument if you want to update the existent file. Change the
+                 file name if you actually want to update a new file in the
+                 gist. """
 
 CONFIG_FILE_NOT_FOUND = "Configuration file not found or not valid"
 
 DOWNLOADING = "Downloading: %s\nTo: %s\nBytes: %s"
 
-USER_NOT_FOUND = ("Can not load GitHub user name neither from '--user (-u)' "
-    "parameter nor from the configuration file. ")
+USER_NOT_FOUND = """Can not load GitHub user name neither from '--user (-u)'
+                 parameter nor from the configuration file. """
 
-CREDENTIAL_NOT_FOUND = ("Credential should be informed via configuration "
-    "file or '-s' argument")
+CREDENTIAL_NOT_FOUND = """Credential should be informed via configuration "file
+                       or '-s' argument"""
 
 AUTHORIZE_NOK = "Could not get an authorization token. Github reason: '%s'"
 
