@@ -182,6 +182,10 @@ def __format_gist(gist):
 
     :param gist: :class: `Gist <Gist>` instance.
     """
+    url_title = unicode(colored.green('Url:\t\t'))
+    html_title = unicode(colored.green('Html Url:\t'))
+    public_title = unicode(colored.green('Private:\t'))
+    file_title = unicode(colored.green('Files:\t\t'))
 
     # Calculate the number of columns of the current terminal window
     rows, columns = os.popen('stty size', 'r').read().split()
@@ -195,20 +199,16 @@ def __format_gist(gist):
     gists_string += colored.green('Description:\t')
     if gist.description:
         gists_string += gist.description + '\n'
-    gists_string += colored.green('Url:\t\t')
-    gists_string += gist.url + '\n'
-    gists_string += colored.green('Html Url:\t')
-    gists_string += gist.html_url + '\n'
-    gists_string += colored.green('Private:\t')
-    gists_string += str(not gist.public) + '\n'
-
-    gists_string += colored.green('Files:\t\t')
+    gists_string += url_title + gist.url + '\n'
+    gists_string += html_title + gist.html_url + '\n'
+    gists_string += public_title + str(not gist.public) + '\n'
     gist_names = [gistfile.filename for gistfile in gist.files]
     stringfiles = "[" + ", ".join(gist_names) + "]"
-    gists_string += colored.red(stringfiles) + '\n'
+    gists_string += file_title + colored.red(stringfiles) + '\n'
 
     # Prepare the Footer
     gists_string += colored.cyan('-' * int(columns)) + "\n"
+
     return gists_string
 
 
