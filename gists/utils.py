@@ -34,6 +34,7 @@ import urllib2
 import os
 import literals
 import ConfigParser
+from clint.textui import colored
 
 
 class Result(object):
@@ -299,7 +300,8 @@ def download(url, destination_dir, file_name, file_size):
     """
 
     destination_path = os.path.join(destination_dir, file_name)
-    print (literals.DOWNLOADING % (url, destination_path, file_size))
+    print colored.green(literals.DOWNLOADING %
+                        (url, destination_path, file_size))
 
     # Open the remote url as a file, read it and write it in
     # target directory

@@ -157,7 +157,7 @@ def format_list(result):
 def format_authorize(result):
     """ This is enough for this method. """
     if result.success:
-        return "Authentication token written in '~/.gistsrc'"
+        return colored.green("Authentication token written in '~/.gistsrc'")
     else:
         # Format the error string message
         return __format_error(result.data)

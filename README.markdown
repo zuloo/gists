@@ -18,33 +18,15 @@ First time you run 'gists', execute the command
 
 <!-- language: bash -->
 
-    $ gists authorize -u your_github_user -c your_github_password
+    $ gists authorize -u your_github_user
 
-
-And the file ~/.gistsrc (which stores the 'gists' configuration) will be written
+You will need to type your password, and The file ~/.gistsrc (which stores the 'gists' configuration) will be written
 with your GitHub api authentication token.
 
 Anytime you can revoke your authentication token in your [applications page](https://github.com/settings/applications) on GitHub.
 
 Use it!
 -------
-
-### Set up credentials ###
-
-Gists uses the file '~/.gistsrc' to obtain your GitHub authentication token. First thing you need to do is set up your
-credentials to perform actions that needs authentication. Method is just:
-
-<!-- language: bash -->
-
-    $ gists authorize -u your_github_user -c your_github_password
-
-<!-- language: lang-none -->
-
-You can perform this actions many times you wish to override the values.
-
-If you don't want to authorize the app, you can always use the **-u** and **-c** parameters to provide the
-credentials in each command.
-
 
 ### List of Gists ###
 
@@ -63,9 +45,8 @@ This will return a list of Gists from field __user__ from [credentials]() sectio
 #### More arguments: ####
 
 * __-u__ (--user) specifies from whom user you want to retrieve his/her gists.
-* __-p__ (--private) retrieves the private gists from the user besides the public ones. (Needs authentication)
 * __-s__ (--starred) retrieves ONLY the starred gists.
-
+* __-p__ (--private) return the private gists besides the public ones.
 
 
 ### Show a Gist ###
@@ -100,7 +81,8 @@ Download a file from a Gist using the 'get' action. While in the 'show' action t
 
 <!-- language: lang-none -->
 
-The name of the target file in your OS will be the same of the argument provided by __-f__. There is no way to change this.
+The name of the target file in your local will be the same of the argument provided by __-f__. There is no way to change this.
+If the gist has only one file, the '-f-' parameter is not needed.
 
 #### More arguments ####
 
@@ -122,9 +104,10 @@ The name of the file in the OS will be the same of the name of the file in the G
 
 #### More arguments ####
 
+* __-u__ (--user) use this user instead of the one specified in configuration file. You will need to authenticate.
 * __-p__ (--private) whenever you want the Gist to be private.
 * __-d__ (--description) Set the description of the Gist.
-* __-i__ (--input\_dir) Specify the input directory where the file is.
+* __-i__ (--input\_dir) Specify the input directory where the files are.
 
 
 ### Update a Gist ###
@@ -187,6 +170,7 @@ In that case the parameters __-i__, __-n__ and __-r__ will be applied to all fil
 
 #### More arguments ####
 
+* __-u__ (--user) use this user instead of the one specified in configuration file. You will need to authenticate.
 * __-i__ (--input\_dir) Specify the input directory where the files are.
 
 ### Fork a Gist ###
@@ -204,6 +188,10 @@ Fork another user's gist and create a new one where you are the owner
 It will fork the gist. If the original gist is public, it will create a public gist. If it is private, it will
 create a private gist. There is no way to change that.
 
+#### More arguments ####
+
+* __-u__ (--user) use this user instead of the one specified in configuration file. You will need to authenticate.
+
 ### Star a Gist ###
 
 Mark a Gist as starred.
@@ -218,6 +206,10 @@ Mark a Gist as starred.
 
 It will star the gist. It replicates the behavior of the Gists API. This is: sets the Gist as starred for the current user. If the Gist is already starred, a 'Success' will be returned. (It does not toggle star/unstar nor raises any 'Already Starred' exception)
 
+#### More arguments ####
+
+* __-u__ (--user) use this user instead of the one specified in configuration file. You will need to authenticate.
+
 ### Unstar a Gist ###
 
 Mark a Gist as unstarred
@@ -231,3 +223,8 @@ Mark a Gist as unstarred
 <!-- language: lang-none -->
 
 It will unstar the gist. It replicates the behavior of the Gists API. This is: sets the Gist as unstarred for the current user. If the Gist is already unstarred, a 'Success' will be returned. (It does not toggle star/unstar nor raises any 'Already Unstarred' exception)
+
+#### More arguments ####
+
+* __-u__ (--user) use this user instead of the one specified in configuration file. You will need to authenticate.
+

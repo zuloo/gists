@@ -32,6 +32,7 @@ data for the functions in 'actions' module.
 import sys
 import utils
 import literals
+import getpass
 
 
 # Load the configuration instance once the module is imported
@@ -56,13 +57,7 @@ def handle_list(args):
     if args.private or args.starred:
         # Get the 'credentials' argument if exists, otherwise take it from
         # configuration file. If 'secret' can not be loaded, raise an exception
-        if args.credentials:
-            credential = args.credentials
-        else:
-            credential = config.getConfigToken()
-            if not credential:
-                print literals.CREDENTIAL_NOT_FOUND
-                sys.exit()
+        credential = get_credentials(args)
     else:
         credential = None
 
@@ -72,38 +67,16 @@ def handle_list(args):
 
 def handle_update(args):
     """ Handle the arguments to call the 'update gist' functionality. """
-
-    # Get the 'credentials' argument if exists, otherwise take it from
-    # configuration file. If 'credentials' can not be loaded, raise an
-    # exception
-    if args.credentials:
-        credential = args.credentials
-    else:
-        credential = config.getConfigToken()
-    if not credential:
-        print literals.CREDENTIAL_NOT_FOUND
-        sys.exit()
-
     if not args.input_dir:
         args.input_dir = "./"
 
     return (args.gist_id, args.description, args.filenames,
             args.input_dir, args.new, args.remove,
-            utils.GithubFacade(args.user, credential))
+            utils.GithubFacade(args.user, get_credentials(args)))
 
 
 def handle_post(args):
     """ Handle the arguments to call the 'create gist' functionality. """
-
-    # Get the 'secret' argument if exists, otherwise take it from configuration
-    # file. If 'secret' can not be loaded, raise an exception
-    if args.credentials:
-        credential = args.credentials
-    else:
-        credential = config.getConfigToken()
-    if not credential:
-        print literals.CREDENTIAL_NOT_FOUND
-        sys.exit()
 
     # Define public or private
     if args.private:
@@ -115,7 +88,7 @@ def handle_post(args):
         args.input_dir = "./"
 
     return (public, args.filenames, args.input_dir, args.description,
-            utils.GithubFacade(args.user, credential))
+            utils.GithubFacade(args.user, get_credentials(args)))
 
 
 def handle_show(args):
@@ -130,56 +103,41 @@ def handle_get(args):
 
 def handle_delete(args):
     """ Handle the arguments to call the 'delete' gists functionality. """
-
-    # Get the 'credentials' argument if exists, otherwise take it from
-    # configuration file. Otherwise, if 'token' can not be loaded, raise an
-    # exception
-    if args.credentials:
-        credential = args.credentials
-    else:
-        credential = config.getConfigToken()
-    if not credential:
-        print literals.CREDENTIAL_NOT_FOUND
-        sys.exit()
-
-    return args.gist_id, utils.GithubFacade(args.user, credential)
+    return args.gist_id, utils.GithubFacade(args.user, get_credentials(args))
 
 
 def handle_authorize(args):
     """ Handle the arguments to call the 'authorize' gists functionality. """
-    return (utils.GithubFacade(args.user, args.credentials),)
+    password = get_credentials(args.user)
+    return utils.GithubFacade(args.user, password),
 
 
 def handle_fork(args):
     """ Handle the arguments to call the 'fork' gists functionality. """
-
-    # Get the 'credentials' argument if exists, otherwise take it from
-    # configuration file. Otherwise, if 'token' can not be loaded, raise an
-    # exception
-    if args.credentials:
-        credential = args.credentials
-    else:
-        credential = config.getConfigToken()
-    if not credential:
-        print literals.CREDENTIAL_NOT_FOUND
-        sys.exit()
-
-    return args.gist_id, utils.GithubFacade(args.user, credential)
+    return args.gist_id, utils.GithubFacade(args.user, get_credentials(args))
 
 
 def handle_star(args):
     """ Handle the arguments to call the 'star' and 'unstar' gists
     functionality. """
+    return args.gist_id, utils.GithubFacade(args.user, get_credentials(args))
 
-    # Get the 'credentials' argument if exists, otherwise take it from
-    # configuration file. Otherwise, if 'token' can not be loaded, raise an
-    # exception
-    if args.credentials:
-        credential = args.credentials
+
+def get_credentials(args):
+    """ Get the credentials to authenticate through Github.
+
+    If the argument 'user' has been supplied, then it prompts the password
+    request.
+    Otherwise it will look for the authentication token in the configuration
+    file
+    """
+    if (args.user):
+        credentials = getpass.getpass("Github password for user '%s': "
+                                      % (args.user))
     else:
-        credential = config.getConfigToken()
-    if not credential:
+        credentials = config.getConfigToken()
+    if not credentials:
         print literals.CREDENTIAL_NOT_FOUND
         sys.exit()
 
-    return args.gist_id, utils.GithubFacade(args.user, credential)
+    return credentials
