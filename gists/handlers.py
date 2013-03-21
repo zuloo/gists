@@ -108,7 +108,7 @@ def handle_delete(args):
 
 def handle_authorize(args):
     """ Handle the arguments to call the 'authorize' gists functionality. """
-    password = get_credentials(args.user)
+    password = get_credentials(args)
     return utils.GithubFacade(args.user, password),
 
 
