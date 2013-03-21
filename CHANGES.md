@@ -5,6 +5,7 @@
 ** https://github.com/jdevesa/gists/commit/5100520eb0c6750292ee3d49a682c985c9417152
     
 * Remove all '--credentials' arguments and use the prompt via 'getpass.getpass(string)'.
+** https://github.com/jdevesa/gists/commit/e32b957bf78401537fdd7f06a05412ed0940ef54
 
 0.4 (2012/30/12)
 ----------------
