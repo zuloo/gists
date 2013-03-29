@@ -125,13 +125,13 @@ def format_list(result):
         rows, columns = os.popen('stty size', 'r').read().split()
 
         # Set the header
-        gists_string = colored.cyan('-' * int(columns)) + "\n"
-        gists_string += colored.cyan("List of gists\n")
-        gists_string += colored.cyan('-' * int(columns)) + "\n"
+        gists_string = unicode(colored.cyan('-' * int(columns)) + "\n")
+        gists_string += unicode(colored.cyan("List of gists\n"))
+        gists_string += unicode(colored.cyan('-' * int(columns)) + "\n")
 
         # Set the contents for each Gist listed
         for gist in list_of_gists:
-            gists_string += colored.green(gist.identifier + ": ")
+            gists_string += unicode(colored.green(gist.identifier + ": "))
             description = "(no desc)"
             if gist.description and gist.description != "":
                 description = gist.description
@@ -139,13 +139,13 @@ def format_list(result):
             gist_names = [gistfile.filename for
                           gistfile in gist.files]
             stringfiles = " [" + ", ".join(gist_names) + "]"
-            gists_string += colored.red(stringfiles)
+            gists_string += unicode(colored.red(stringfiles))
             if not gist.public:
                 gists_string += " (Private Gist) "
             gists_string += '\n'
 
         # Set the footer
-        gists_string += colored.cyan('-' * int(columns)) + "\n"
+        gists_string += unicode(colored.cyan('-' * int(columns)) + "\n")
 
         # Return the formatted String
         return gists_string
