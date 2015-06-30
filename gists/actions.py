@@ -38,6 +38,15 @@ module, call to GitHub Gists API and manage the response.
 
 """
 
+def get_json(request):
+    """ Retrieve JSON of from request
+
+    :param request: the request
+    """
+    if callable(request.json):
+        return request.json()
+    else: 
+        return request.json
 
 def list_gists(username, facade, want_starred):
     """ Retrieve the list of gists for a concrete user.
@@ -55,14 +64,14 @@ def list_gists(username, facade, want_starred):
     if response.ok:
         # List of gists for the requested user found.
         list_gists = []
-        for gist in response.json:
+        for gist in get_json(response):
             list_gists.append(model.Gist(gist))
 
         return build_result(True, list_gists)
     else:
         # GitHub response error. Parse the response
         return build_result(False, literals.LISTS_ERROR,
-                            response.json['message'])
+                            get_json(response)['message'])
 
 
 def get(gist_id, requested_file, destination_dir, facade):
@@ -84,7 +93,7 @@ def get(gist_id, requested_file, destination_dir, facade):
 
     if response.ok:
         # Gist file found. Parse it into a 'model.Gist' class.
-        gist_obj = model.Gist(response.json)
+        gist_obj = model.Gist(get_json(response))
         list_names = [gistfile.filename for gistfile in gist_obj.files]
 
         if len(gist_obj.files) == 1 and not requested_file:
@@ -121,7 +130,7 @@ def get(gist_id, requested_file, destination_dir, facade):
     else:
         # Handle GitHub response error
         result = build_result(False, literals.DOWNLOAD_ERROR,
-                              response.json['message'])
+                              get_json(response)['message'])
 
     return result
 
@@ -145,7 +154,7 @@ def show(gist_id, requested_file, facade):
 
     if response.ok:
         # Gist found. Parse the json response into the 'model.Gist' class
-        gist_obj = model.Gist(response.json)
+        gist_obj = model.Gist(get_json(response))
         if not requested_file:
             # Fill the response with the metadata of the gist
             result = build_result(True, gist_obj)
@@ -165,7 +174,7 @@ def show(gist_id, requested_file, facade):
     else:
         # GitHub response not ok. Parse the response
         result = build_result(False, literals.SHOW_ERROR,
-                              response.json['message'])
+                              get_json(response)['message'])
 
     return result
 
@@ -205,10 +214,10 @@ def post(public, upload_files, filepath, description, facade):
     response = facade.create_gist(gist)
     # Parse the response
     if response.ok:
-        result = build_result(True, model.Gist(response.json))
+        result = build_result(True, model.Gist(get_json(response)))
     else:
-        if response.json:
-            result = build_result(False, response.json['message'])
+        if get_json(response):
+            result = build_result(False, get_json(response)['message'])
         else:
             result = build_result(False, literals.UNHANDLED_EXCEPTION)
     return result
@@ -238,14 +247,14 @@ def delete(gistid, facade):
                 result = build_result(True, literals.DELETE_OK, gistid)
 
             else:
-                res_message = response.json['message']
+                res_message = get_json(response)['message']
                 result = build_result(False, literals.DELETE_NOK, res_message)
         else:
             # Aborted mission
             result = build_result(False, literals.DELETE_ABORTED)
     else:
         # Gist not retrieved.
-        res_message = response.json['message']
+        res_message = get_json(response)['message']
         result = build_result(False, literals.DELETE_NOK, res_message)
 
     return result
@@ -269,10 +278,10 @@ def update(gistid, description, filenames, filepath, new, remove, facade):
 
     if response.ok:
         # Gist found.
-        gist = model.Gist(response.json)
+        gist = model.Gist(get_json(response))
     else:
         result = build_result(False, literals.UPDATE_NOK,
-                              response.json['message'])
+                              get_json(response)['message'])
         return result
 
     if description:
@@ -317,7 +326,7 @@ def update(gistid, description, filenames, filepath, new, remove, facade):
         return build_result(True, gist)
     else:
         return build_result(False, literals.UPDATE_NOK,
-                            response.json['message'])
+                            get_json(response)['message'])
 
     return result
 
@@ -331,7 +340,7 @@ def authorize(facade):
     # check if there is already an authorization for the app
     response = facade.list_authorizations()
     if response.ok:
-        for auth in response.json:
+        for auth in get_json(response):
             authorization = model.Authorization(auth)
             if authorization.note == literals.APP_NAME:
                 # write the token to the configuration file
@@ -341,7 +350,7 @@ def authorize(facade):
                 return build_result(True, authorization)
     else:
         return build_result(False, literals.AUTHORIZE_NOK,
-                            response.json['message'])
+                            get_json(response)['message'])
 
     # build the authorization request
     auth = model.Authorization()
@@ -352,7 +361,7 @@ def authorize(facade):
     response = facade.authorize(auth)
 
     if response.ok:
-        auth = model.Authorization(response.json)
+        auth = model.Authorization(get_json(response))
         result = build_result(True, auth)
 
         # write the token to the configuration file
@@ -361,7 +370,7 @@ def authorize(facade):
         configurer.setConfigToken(auth.token)
     else:
         result = build_result(False, literals.AUTHORIZE_NOK,
-                              response.json['message'])
+                              get_json(response)['message'])
 
     return result
 
@@ -375,11 +384,11 @@ def fork(gist_id, facade):
     response = facade.fork_gist(gist_id)
 
     if response.ok:
-        result = build_result(True, model.Gist(response.json))
+        result = build_result(True, model.Gist(get_json(response)))
     else:
-        if response.json:
+        if get_json(response):
             result = build_result(False, literals.FORK_ERROR, gist_id,
-                                  response.json['message'])
+                                  get_json(response)['message'])
         else:
             result = build_result(False, literals.UNHANDLED_EXCEPTION)
     return result
@@ -397,7 +406,7 @@ def star(gist_id, facade):
         result = build_result(True, literals.STAR_OK, gist_id)
 
     else:
-        res_message = response.json['message']
+        res_message = get_json(response)['message']
         result = build_result(False, literals.STAR_NOK, res_message)
 
     return result
@@ -415,7 +424,7 @@ def unstar(gist_id, facade):
         result = build_result(True, literals.UNSTAR_OK, gist_id)
 
     else:
-        res_message = response.json['message']
+        res_message = get_json(response)['message']
         result = build_result(False, literals.UNSTAR_NOK, res_message)
 
     return result
