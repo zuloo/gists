@@ -18,7 +18,7 @@ def get_version():
         return VERSION
     raise RuntimeError('No version info found.')
 
-requirements = ['requests == 0.14.0', 'clint == 0.3.1']
+requirements = ['requests', 'clint == 0.3.1']
 if sys.version_info < (2, 7):
     requirements.append('argparse')
 elif sys.version_info < (2, 6):
